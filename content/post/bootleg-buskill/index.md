@@ -22,7 +22,7 @@ What exactly is Buskill? According to the official website ([Website](https://ww
 ## Demo
 
 Here is a demonstration of the improvised Buskill cable in action on my old laptop running pop!_OS.
-{{< video src="/assets/bootlegbuskill/buskill.mp4" poster="./video-poster.png" controls >}}
+{{< video src="/assets/bootlegbuskill/buskill.mp4" poster="./video-poster.png" >}}
 
 ## DI-Why?
 
