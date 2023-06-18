@@ -21,7 +21,8 @@ What exactly is Buskill? According to the official website ([Website](https://ww
 
 ## Demo
 
-### video permalink here
+Here is a demonstration of the improvised Buskill cable in action on my old laptop running pop!_OS.
+{{< video src="/assets/bootlegbuskill/buskill.mp4" poster="./video-poster.png" controls >}}
 
 ## DI-Why?
 
@@ -44,13 +45,13 @@ Some might ask about USB-C instead as there is an abundance of USB-C magnetic br
 
 First we will configure the Buskill cable itself. Take your carabiner (or keyring/paracord) and attach it to the USB device (which should have a hole). Plug your USB device into the adapter/extension cord. Ensure that the connection isn't too tight, preventing the device from coming out. Also make sure that the connection isn't too loose, where any slight movement would result in a disconnection. Connect the cable to your computer. I managed to find all of the parts I need just laying around in some storage bins, here is what it looks like:
 
-![Completed buskill cable](assets/4.jpg)
+![Completed buskill cable](/assets/bootlegbuskill/4.jpg)
 
 ### What shouldn't you do?
 
 For anyone who is attempting this at home, I would advise that you find a strong, durable USB device that already has a hole for a carabiner/keyring. It is unlikely that a makeshift implementation will prove to be reliable; however, I still tried. I took a strong piece of wire that I found and bent it to serve as a keyhole. I place this wire on top of the flat side of a USB drive and super glued it, then I wrapped it with electrical tape. This was not the best of ideas, but I thought why not. I tested it with some weight and the wire slipped out at around 20lbs. I'm sure someone could achieve something greater on this front, but I am not that someone. Here are some images of the failed endeavor:
 
-![](assets/1.jpg) ![](assets/2.jpg) ![](assets/3.jpg)
+![](/assets/bootlegbuskill/1.jpg) ![](/assets/bootlegbuskill/2.jpg) ![](/assets/bootlegbuskill/3.jpg)
 
 ### Creating the script
 
@@ -81,7 +82,7 @@ Before we configure our udev rule, we need to find out what the ID_MODEL of our 
 5.  Press `Ctrl + C` to stop monitoring.
 6.  Scroll until you find the entry that matches your USB device and note down the ID_MODEL value.
 
-![Udev monitoring results](assets/5.jpg)
+![Udev monitoring results](/assets/bootlegbuskill/5.jpg)
 
 ### Configuring the udev rule
 
