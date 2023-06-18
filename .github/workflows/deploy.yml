@@ -54,6 +54,7 @@ jobs:
             - name: Deploy 🚀
               uses: JamesIves/github-pages-deploy-action@4.1.4
               with:
+                  github_token: ${{ secrets.REPO_TOKEN }}
                   branch: gh-pages
                   folder: public
                   clean: true
