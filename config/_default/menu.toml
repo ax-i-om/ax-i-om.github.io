@@ -1,24 +1,25 @@
 # Configure main menu and social menu
 #[[main]]
-#identifier = "home"
-#name = "Home"
-#url = "/"
+#identifier = "projects"
+#name = "Projects"
+#url = "/projects"
 #[main.params]
-#icon = "home"
+#icon = "hash"
 #newtab = true
 
 [[social]]
 identifier = "github"
 name = "GitHub"
-url = "https://github.com/CaiJimmy/hugo-theme-stack"
+url = "https://github.com/ax-i-om"
 
 [social.params]
 icon = "brand-github"
 
 [[social]]
-identifier = "twitter"
-name = "Twitter"
-url = "https://twitter.com"
+identifier = "email"
+name = "Email"
+url = "mailto:addressaxiom@pm.me"
 
 [social.params]
-icon = "brand-twitter"
+icon = "messages"
+
