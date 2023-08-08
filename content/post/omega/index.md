@@ -23,7 +23,7 @@ This tool also includes a preview window that displays the contents of valid lin
 
 ## Monetization
 
-In most cases, these groups don't put a direct paywall in front of said content. They use services like Linkvertise and other ad links that generate revenue from clicks and advertisements. They also increase their revenue by requiring their members to refer others before they can access anything. They may sometimes even form partnerships with other groups that redistribute stolen content. Below are images of messages inside of a discord group that distributes stolen content, where they require individuals to refer others to access specific content. They also provide instructions on how to easily refer others and even an extra section where you can pay if you don't feel like inviting people.
+In most cases, these groups that distribute the stolen content don't put a direct paywall in front of it. They use services like Linkvertise and other ad links that generate revenue from clicks and advertisements. They also increase their revenue by requiring their members to refer others before they can access anything. They may sometimes even form partnerships with other groups that redistribute stolen content. Below are images of messages inside of a discord group that distributes stolen content, where they require individuals to refer others to access specific content. They also provide instructions on how to easily refer others and even an extra section where you can pay if you don't feel like inviting people.
 
 ![Image of how to get free access by inviting people](assets/8.jpg)
 ![Image of instructions on how to purchase instant access](assets/9.jpg)
