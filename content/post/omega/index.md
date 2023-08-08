@@ -57,7 +57,7 @@ In this URL, we replace **ID** with the eight-character identifier in our extrac
 
 Now all that is left to do is to output the Mega link, where we both write it to the console and write it to a specified text file. 
 
-![Image of Omega being rate limited](1.jpg)
+![Image of Omega being rate limited](assets/1.jpg)
 
 The program is quick, but unfortunately, it is bottlenecked by rate limiting. I decided not to bypass this to avoid causing any heavy loads or interfering with operations in any manner but may implement proxy list support to Omega in the future to circumvent this issue. Without bypassing the rate limits, I was able to scrape 350 online Mega links in around 30 minutes total.
 
@@ -84,21 +84,21 @@ Before continuing, here are some relevant clauses in the Mega Terms of Service u
 
 There were many different methods I employed to evaluate the contents of the drives while avoiding exposure. The first and most obvious way was to look at the metadata of the drive and the folders/files that it contained. 
 
-![Image of drive metadata](2.jpg)
+![Image of drive metadata](assets/2.jpg)
 
 In the image above, we can see the title of the drive and the name of the 0B folder (censored). A quick search on the internet shows us that these groups do distribute stolen content, and use paste sites to distribute said content. We can also reference the size of the folder (we don't need to reasonably assume with this drive, but this is a good example nonetheless). Large files/folders typically indicate lots of photos and videos, as these files generally utilize more space than something like a configuration file. We can also reference the metadata of remaining files, which usually contain group information/markings. For example, a group that marks every single file with its name.
 
-![Image of marked file within drive](3.jpg)
+![Image of marked file within drive](assets/3.jpg)
 
 Groups who leave their logo:
 
-![Image of group logo](7.jpg)
+![Image of group logo](assets/7.jpg)
 
 Some groups leave images, .pdf files, and .txt files containing methods of contact.
 
-![Image of group leaving contact information via .jpg file](4.jpg)
-![Image of group leaving contact information via .pdf file](5.jpg)
-![Image of group leaving contact information via .txt file](6.jpg)
+![Image of group leaving contact information via .jpg file](assets/4.jpg)
+![Image of group leaving contact information via .pdf file](assets/5.jpg)
+![Image of group leaving contact information via .txt file](assets/6.jpg)
 
 Out of the 314 folders/drives that were guaranteed to contain infringing content, only 1.91% (6/314) of them were not obscene. This means their content consisted of media like movies, TV shows, video games, music, and other common forms of entertainment/media. 
 
