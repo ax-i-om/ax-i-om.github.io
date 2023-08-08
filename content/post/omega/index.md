@@ -66,9 +66,13 @@ The program is quick, but unfortunately, it is bottlenecked by rate limiting. I 
 Now I had to evaluate every one of these links which took around four hours total. The text file containing the links had each link separated by a new line. My method of annotation was to write a descriptive tag next to each link based on its contents. Here is a key to the annotations I used:
 
 **INFRINGING** - identifies content that infringes copyright/piracy statutes whilst not being obscene (movies, tv shows, music, video games, etc...).
+
 **OBSCENE** - identifies content that is infringing and obscene/indecent. 
+
 **REASONABLE** - identifies content that is empty or requires further inspection beyond simply viewing the content metadata (downloading, streaming, previewing, etc...), but we can reasonably assume that the contents are infringing, obscene, or objectionable based on the remaining metadata (title, folder names, remaining marks, etc...).
+
 **OBJECTIONABLE** - identifies content that falls under Mega's definition of objectionable material, and typically represents exploitative materials.
+
 **OTHER/NONE** - identifies content that falls outside of the aforementioned categories, and according to inspection, isn't exploitative, obscene, or infringing in any manner.
 
 Unfortunately, I was unable to mark any of the links as **OTHER/NONE**. Out of the 350 links, every single one of them was infringing or we could reasonably assume they were infringing.
