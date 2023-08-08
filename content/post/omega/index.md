@@ -61,6 +61,8 @@ Now all that is left to do is to output the Mega link, where we both write it to
 
 The program is quick, but unfortunately, it is bottlenecked by rate limiting. I decided not to bypass this to avoid causing any heavy loads or interfering with operations in any manner but may implement proxy list support to Omega in the future to circumvent this issue. Without bypassing the rate limits, I was able to scrape 350 online Mega links in around 30 minutes total.
 
+Here is a link to the repository containing the program created and used in this article: [Omega](https://github.com/ax-i-om/omega)
+
 ## Results
 
 Now I had to evaluate every one of these links which took around four hours total. The text file containing the links had each link separated by a new line. My method of annotation was to write a descriptive tag next to each link based on its contents. Here is a key to the annotations I used:
