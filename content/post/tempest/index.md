@@ -1,7 +1,7 @@
 ---
-title: Vigor
+title: Tempest
 description: Leveraging paste sites as a medium for the discovery of exploitative materials.
-slug: vigor
+slug: tempest
 date: 2023-08-08 00:00:00+0000
 image: cover.jpg
 categories:
@@ -37,7 +37,7 @@ The total revenue from the remaining 21 links was 720.87 USD, purely from Linkve
 
 I realized how much of an issue this is, but also how I can use this to my advantage. These links to Mega drives/files aren't naturally indexed by search engines, meaning that their discovery is essentially impossible unless someone directly shared this link with you or publicly uploaded it somewhere. This previously meant that there was no straightforward answer for discovering bad actors using Mega as a hub for the storage and distribution of stolen content. We also couldn't *guess* the Mega drive's ID and/or decryption key in an efficient manner, considering the combined length/complexity; however, now that individuals have started using paste sites as a medium for distribution, we don't have to. All we have to do is guess the five-character string that is used as the identifier for the paste, and we can guess these *really* fast. This also means that any content discovered through this process was meant to be shared, meaning we are not directly violating anyone's privacy.
 
-After realizing this, I quickly got to work on developing a more refined solution, designed specifically to scrape and extract links to these file-sharing/storage drives. I salvaged and modified some code for generating a random string of characters using two arguments: the length of the string, and what characters to choose from. The paste site that Vigor currently scrapes from is Rentry.co, which uses a five-character long string consisting of lower case characters (a-z), upper case characters (A-Z), and numbers 0-9. We use this section of the code to brute force the Rentry.co paste identifier string until we get a hit. We differentiate between hits and misses by using the response's status code. If the status code is 200 (OK), then we have a hit. If it is anything else, then it is a miss and we continue. 
+After realizing this, I quickly got to work on developing a more refined solution, designed specifically to scrape and extract links to these file-sharing/storage drives. I salvaged and modified some code for generating a random string of characters using two arguments: the length of the string, and what characters to choose from. The paste site that Tempest currently scrapes from is Rentry.co, which uses a five-character long string consisting of lower case characters (a-z), upper case characters (A-Z), and numbers 0-9. We use this section of the code to brute force the Rentry.co paste identifier string until we get a hit. We differentiate between hits and misses by using the response's status code. If the status code is 200 (OK), then we have a hit. If it is anything else, then it is a miss and we continue. 
 
 After we get a hit, the next step is to check whether or not the *raw* paste contains a Mega link. This can be achieved relatively easily by using RegEx. Here is the expression I created that can accurately identify any valid Mega file and/or folder. 
 
@@ -47,7 +47,7 @@ https://mega.nz/(folder|file)/([a-zA-Z0-9]{0,8})#([a-zA-Z0-9_-]{43}|[a-zA-Z0-9_-
 
 This will NOT extract Mega links that do not include a decryption key in the URL. Mega links quickly differentiate between files and folders in the URL. Both files and folders have an ID of eight characters in length, consisting of lower case characters (a-z), upper case characters (A-Z), and the numbers 0-9. This is followed by a pound (#) symbol, which separates the ID from the decryption key. The decryption key can consist of lower case characters (a-z), upper case characters (A-Z), and the numbers 0-9; however, the decryption key also may include underscores ( _ ) and dashes/hyphens ( - ). Unlike the IDs, the decryption keys do differentiate in length based on whether or not it is a file or folder. Folders have a decryption key of 22 characters in length, whereas files have a decryption key of 43 characters in length. We will use the same expression to later extract any identified links from the paste.
 
-Now that we have extracted our Mega link, we must check whether or not it is still online. There is not much use in scraping offline Mega links in our scenario. The Mega API (Application Programming Interface) makes this extremely easy.  Here is what the request URL looks like in Vigor: 
+Now that we have extracted our Mega link, we must check whether or not it is still online. There is not much use in scraping offline Mega links in our scenario. The Mega API (Application Programming Interface) makes this extremely easy.  Here is what the request URL looks like in Tempest: 
 
 ```
 https://g.api.mega.co.nz/cs?id=5644474&n=ID
@@ -57,11 +57,11 @@ In this URL, we replace **ID** with the eight-character identifier in our extrac
 
 Now all that is left to do is to output the Mega link, where we both write it to the console and write it to a specified text file. 
 
-![Image of Vigor being rate limited](assets/1.jpg)
+![Image of Tempest being rate limited](assets/1.jpg)
 
-The program is quick, but unfortunately, it is bottlenecked by rate limiting. I decided not to bypass this to avoid causing any heavy loads or interfering with operations in any manner but may implement proxy list support to Vigor in the future to circumvent this issue. Without bypassing the rate limits, I was able to scrape 350 online Mega links in around 30 minutes total.
+The program is quick, but unfortunately, it is bottlenecked by rate limiting. I decided not to bypass this to avoid causing any heavy loads or interfering with operations in any manner but may implement proxy list support to Tempest in the future to circumvent this issue. Without bypassing the rate limits, I was able to scrape 350 online Mega links in around 30 minutes total.
 
-Here is a link to the repository containing the program created and used in this article: [Vigor](https://github.com/ax-i-om/vigor)
+Here is a link to the repository containing the program created and used in this article: [Tempest](https://github.com/ax-i-om/tempest)
 
 ## Results
 
@@ -114,6 +114,18 @@ According to the [Objectionable material](https://mega.io/takedown#Objectionable
 
 ## Summary
 
-Although a bit rough-edged, Vigor has shown that it is capable of efficiently extracting exploitative materials being distributed by using paste sites as a medium of discovery. This means that we can interfere with the distribution of said content more effectively. 
+Although a bit rough-edged, Tempest has shown that it is capable of efficiently extracting exploitative materials being distributed by using paste sites as a medium of discovery. This means that we can interfere with the distribution of said content more effectively. 
 
-Of course, this is only the tip of the iceberg. There is a much deeper issue occurring below the surface; however, I plan to broaden Vigor's discovery capabilities to assist in this fight. Instead of only searching for valid Mega links, I will also implement searches for Gofile, Bunkr, Dood, Google Drive, Yandex Disk, Cyberdrop, and Sendvid links. Alongside searching for other file-sharing services, Vigor will also search through other paste services such as pasteall.org, paste.in, and paste.ee. Another interesting capability I plan to add is recursive discovery, meaning that if a paste contains another paste, ad-link, or shortened URL, Vigor will automatically search said links for files, drives, or other links. Of course, I will likely implement proxy list support to bypass any rate-limiting, as that appears to be the primary bottleneck.
+Of course, this is only the tip of the iceberg. There is a much deeper issue occurring below the surface; however, I plan to broaden Tempest's discovery capabilities to assist in this fight. Instead of only searching for valid Mega links, I will also implement searches for Gofile, Bunkr, Dood, Google Drive, Yandex Disk, Cyberdrop, and Sendvid links. Alongside searching for other file-sharing services, Tempest will also search through other paste services such as pasteall.org, paste.in, and paste.ee. Another interesting capability I plan to add is recursive discovery, meaning that if a paste contains another paste, ad-link, or shortened URL, Tempest will automatically search said links for files, drives, or other links. Of course, I will likely implement proxy list support to bypass any rate-limiting, as that appears to be the primary bottleneck.
+
+## Update (Sep 12, 2023)
+
+Tempest has undergone some significant changes since this post was published. Tempest now supports six new cloud storage/file sharing platforms along side Mega, specifically:
+- Bunkr
+- Cyberdrop
+- Dood
+- Gofile
+- Google Drive
+- SendVid
+
+Alongside the implementation of these new modules, Tempest now extracts more information about extracted links (Upload Date, Drive/File Size, File Count, Video Length, Thumbnail, etc...) where applicable. This metadata coupled with Tempest's new ability to output said results to JSON/CSV files enables researchers/professionals to efficiently handle large amounts of scraped data in order to engage in advanced analytics. Tempest is also currently undergoing some significant modularization and code refactoring in order to streamline maintenance and collaboration while simultaneously accomodating users with an intuitive interface/experience. The end-level of modularity Tempest aims to achieve will enable virtually anyone to add their own modules to Tempest, or tailor Tempest to their specific needs (foundational functions such as Extract(), Validate(), and any applicable metadata extraction functions will always be exported). 
