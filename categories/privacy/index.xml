@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Privacy on Axiom</title><link>https://ax-i-om.github.io/categories/privacy/</link><description>Recent content in Privacy on Axiom</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 18 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ax-i-om.github.io/categories/privacy/index.xml" rel="self" type="application/rss+xml"/><item><title>Bootleg Buskill</title><link>https://ax-i-om.github.io/p/bootleg-buskill/</link><pubDate>Sun, 18 Jun 2023 00:00:00 +0000</pubDate><guid>https://ax-i-om.github.io/p/bootleg-buskill/</guid><description>&lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/cover.jpg" alt="Featured image of post Bootleg Buskill" />&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>If you are reading this then chances are, you have encrypted your device&amp;rsquo;s drive(s). If someone were to steal your device then they would be unable to access your data, but what if they stole it when you have already unencrypted the device? Chances are, you wont have enough time to hold down the power button and shut off your computer. This is where BusKill comes in&lt;/p>
+&lt;p>What exactly is Buskill? According to the official website (&lt;a class="link" href="https://www.buskill.in" target="_blank" rel="noopener"
+>Website&lt;/a> | &lt;a class="link" href="https://web.archive.org/web/20230609160530/https://www.buskill.in/" target="_blank" rel="noopener"
+>Archive&lt;/a>), Buskill is a &amp;ldquo;dead man switch triggered when a magnetic breakaway is tripped.&amp;rdquo; When the USB device is disconnected, it triggers the computer to lock or shutdown. This allows us to protect our data&amp;rsquo;s confidentiality and/or integrity from being compromised.&lt;/p>
+&lt;h2 id="demo">Demo&lt;/h2>
+&lt;p>Here is a demonstration of the improvised Buskill cable in action on my old laptop running pop!_OS.
+&lt;div class="video-wrapper">
+&lt;video
+controls
+src="assets/buskill.mp4"
+poster="./video-poster.png"
+>
+&lt;p>
+Your browser doesn't support HTML5 video. Here is a
+&lt;a href="assets/buskill.mp4">link to the video&lt;/a> instead.
+&lt;/p>
+&lt;/video>
+&lt;/div>
+&lt;/p>
+&lt;h2 id="di-why">DI-Why?&lt;/h2>
+&lt;p>The concept of this &amp;ldquo;dead man switch&amp;rdquo; sounds great, but I did not want to order this hardware from another party (or order it at all) or have to manually arm/disarm the device every time. Fortunately, I found an article made by Michael Altfield (&lt;a class="link" href="https://tech.michaelaltfield.net/2020/01/02/buskill-laptop-kill-cord-dead-man-switch/" target="_blank" rel="noopener"
+>Website&lt;/a> | &lt;a class="link" href="https://web.archive.org/web/20230615230938/https://tech.michaelaltfield.net/2020/01/02/buskill-laptop-kill-cord-dead-man-switch/" target="_blank" rel="noopener"
+>Archive&lt;/a>), the founder of Buskill, that shows us how we can create our own Buskill device for cheap. Michael provides a lot of valuable information in this article, but I had to improvise.&lt;/p>
+&lt;p>The first main issue I encountered was a lack of availability for the mentioned magnetic breakaway USB adapters. The one showcased in the article was discontinued and I have had no luck finding any other USB Type A breakaway connectors except for one (&lt;a class="link" href="https://www.distrelec.biz/en/adapter-magnetic-usb-plug-magnetic-usb-jack-rosenberger-mu1k101-s00z/p/30095359" target="_blank" rel="noopener"
+>Website&lt;/a> | &lt;a class="link" href="https://web.archive.org/web/20230615231947/https://www.distrelec.biz/en/adapter-magnetic-usb-plug-magnetic-usb-jack-rosenberger-mu1k101-s00z/p/30095359" target="_blank" rel="noopener"
+>Archive&lt;/a>), but it was $36.58 + VAT for a relatively obscure product shipping from across the world.&lt;/p>
+&lt;p>Some might ask about USB-C instead as there is an abundance of USB-C magnetic breakaway cables/adapters online. Referencing a few Reddit posts/comments and some individual experiences (&lt;a class="link" href="https://www.reddit.com/r/UsbCHardware/comments/motlhn/comment/gu6jtos/?utm_source=share&amp;amp;utm_medium=web3x&amp;amp;utm_name=web3xcss&amp;amp;utm_term=1&amp;amp;utm_content=share_button" target="_blank" rel="noopener"
+>Post&lt;/a>), the current implementations of USB-C magnetic adapters &amp;ldquo;are not compliant with the USB specifications&amp;rdquo; and may damage devices. One user reported having their notebook &amp;ldquo;burned&amp;rdquo; following an accidental detach. The general concern is that your device may be damaged due to static electricity. I would assume that this is why the USB-A magnetic breakaway adapters were discontinued. I have since reached out to Griffin Technology asking if this is why, I will update this post when I receive a response. I am not one to blindly believe everything I read on the internet, but I am also not one to read the USB-C specifications as they are in excess of 300 pages and I have discovered a viable solution that doesn&amp;rsquo;t rely on a magnetic connection.&lt;/p>
+&lt;h2 id="do-it">Do it&lt;/h2>
+&lt;h3 id="requirementsmaterials">Requirements/Materials&lt;/h3>
+&lt;ul>
+&lt;li>Computer that supports udev rules (I am running a debian distribution)&lt;/li>
+&lt;li>USB adapter/extension cord&lt;/li>
+&lt;li>USB device (preferably with a hole for a keyring/string)&lt;/li>
+&lt;li>Carabiner (or keyring/paracord)&lt;/li>
+&lt;/ul>
+&lt;h3 id="hardware">Hardware&lt;/h3>
+&lt;p>First we will configure the Buskill cable itself. Take your carabiner (or keyring/paracord) and attach it to the USB device (which should have a hole). Plug your USB device into the adapter/extension cord. Ensure that the connection isn&amp;rsquo;t too tight, preventing the device from coming out. Also make sure that the connection isn&amp;rsquo;t too loose, where any slight movement would result in a disconnection. Connect the cable to your computer. I managed to find all of the parts I need just laying around in some storage bins, here is what it looks like:&lt;/p>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/assets/4.jpg"
+width="4032"
+height="3024"
+srcset="https://ax-i-om.github.io/p/bootleg-buskill/assets/4_huc2e8d80951c30c17082fcb84c97ecffc_3792847_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/bootleg-buskill/assets/4_huc2e8d80951c30c17082fcb84c97ecffc_3792847_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Completed buskill cable"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="320px"
+>&lt;/p>
+&lt;h3 id="what-shouldnt-you-do">What shouldn&amp;rsquo;t you do?&lt;/h3>
+&lt;p>For anyone who is attempting this at home, I would advise that you find a strong, durable USB device that already has a hole for a carabiner/keyring. It is unlikely that a makeshift implementation will prove to be reliable; however, I still tried. I took a strong piece of wire that I found and bent it to serve as a keyhole. I place this wire on top of the flat side of a USB drive and super glued it, then I wrapped it with electrical tape. This was not the best of ideas, but I thought why not. I tested it with some weight and the wire slipped out at around 20lbs. I&amp;rsquo;m sure someone could achieve something greater on this front, but I am not that someone. Here are some images of the failed endeavor:&lt;/p>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/assets/1.jpg"
+width="4032"
+height="3024"
+srcset="https://ax-i-om.github.io/p/bootleg-buskill/assets/1_hue633b339b372cbbcdacb1ab2548b5000_2388399_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/bootleg-buskill/assets/1_hue633b339b372cbbcdacb1ab2548b5000_2388399_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="320px"
+> &lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/assets/2.jpg"
+width="4032"
+height="3024"
+srcset="https://ax-i-om.github.io/p/bootleg-buskill/assets/2_hua567da8acc4f30d6146882345bde0e76_1176246_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/bootleg-buskill/assets/2_hua567da8acc4f30d6146882345bde0e76_1176246_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="320px"
+> &lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/assets/3.jpg"
+width="4032"
+height="3024"
+srcset="https://ax-i-om.github.io/p/bootleg-buskill/assets/3_hu8f23e0ce349cc8b6db8aafa16e1ad814_1425573_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/bootleg-buskill/assets/3_hu8f23e0ce349cc8b6db8aafa16e1ad814_1425573_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="320px"
+>&lt;/p>
+&lt;h3 id="creating-the-script">Creating the script&lt;/h3>
+&lt;p>Now that you have your DIY Buskill cable, it is time to create the script. The script we create is what will be executed when our USB device is disconnected. In this case, we will be creating a script that quickly shuts off the computer.&lt;/p>
+&lt;ol>
+&lt;li>Navigate to your home directory: &lt;code>cd /home/user&lt;/code>&lt;/li>
+&lt;li>Create a &lt;em>sh&lt;/em> file: &lt;code>touch buskill.sh&lt;/code>&lt;/li>
+&lt;li>With your preferred text editor, open the &lt;em>.sh&lt;/em> file you just created. &lt;code>nano buskill.sh&lt;/code>&lt;/li>
+&lt;li>In the &lt;em>.sh&lt;/em> file, enter the following:&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/bin/sh
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>shutdown -h now
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol start="5">
+&lt;li>Save the script and quit the editor: &lt;code>Ctrl + X, Yes, Return&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;p>This &lt;em>.sh&lt;/em> script will immediately shutdown the computer. You can replace line 2 and onwards with whatever you want to happen when the program is executed such as locking the screen, destroying the LUKS headers, or anything else you can think of. Make sure that you leave the shebang (line 1) in the script so that the correct interpreter is used.&lt;/p>
+&lt;h3 id="finding-the-id-model">Finding the ID model&lt;/h3>
+&lt;p>Before we configure our udev rule, we need to find out what the ID_MODEL of our USB device is.&lt;/p>
+&lt;ol>
+&lt;li>Insert the USB device that will be used with the Buskill cable, or the entire cable with the USB device attached.&lt;/li>
+&lt;li>Open your terminal&lt;/li>
+&lt;li>Execute the following command: &lt;code>udevadm monitor --environment --udev&lt;/code>&lt;/li>
+&lt;li>Remove your USB device/Buskill cable.&lt;/li>
+&lt;li>Press &lt;code>Ctrl + C&lt;/code> to stop monitoring.&lt;/li>
+&lt;li>Scroll until you find the entry that matches your USB device and note down the ID_MODEL value.&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/assets/5.jpg"
+width="944"
+height="752"
+srcset="https://ax-i-om.github.io/p/bootleg-buskill/assets/5_hue8a975865c1188aa4dd2c6c917bc1975_58387_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/bootleg-buskill/assets/5_hue8a975865c1188aa4dd2c6c917bc1975_58387_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Udev monitoring results"
+class="gallery-image"
+data-flex-grow="125"
+data-flex-basis="301px"
+>&lt;/p>
+&lt;h3 id="configuring-the-udev-rule">Configuring the udev rule&lt;/h3>
+&lt;p>Now that we have our cable and our script set up, its time for the important part. We need to create and configure a udev rule that will execute our program upon the disconnection of our Buskill cable. Udev grants us the ability to dynamically manage device events. In our specific scenario, we will be creating a udev rule that executes the script we previously created when we disconnect our Buskill cable&lt;/p>
+&lt;ol>
+&lt;li>Open your terminal and navigate to the rules.d directory: &lt;code>cd /etc/udev/rules.d&lt;/code>&lt;/li>
+&lt;li>Create a &lt;em>.rules&lt;/em> file: &lt;code>touch 00-usb-ID_MODEL.rules&lt;/code> (replace ID_MODEL) with the ID_MODEL you noted previously.&lt;/li>
+&lt;li>Open the file you just created with your preferred text editor: &lt;code>sudo nano 00-usb-ID_MODEL.rules&lt;/code>&lt;/li>
+&lt;li>Paste the following into the &lt;em>.rules&lt;/em> file:&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl"> ACTION==&amp;#34;remove&amp;#34;, ENV{ID_MODEL}==&amp;#34;SanDisk_3.2Gen1&amp;#34;, ENV{DISPLAY}=&amp;#34;:0&amp;#34;, RUN+=&amp;#34;/bin/sh /home/USER/buskill.sh&amp;#34;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol start="5">
+&lt;li>Replace &lt;code>SanDisk_3.2Gen1&lt;/code> with the ID_MODEL you noted previously.&lt;/li>
+&lt;li>Replace any instance of &lt;code>USER&lt;/code> with your user (so that it points to the script you created in your home directory).&lt;/li>
+&lt;li>Save the file and quit the editor: &lt;code>Ctrl + X, Yes, Return&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;p>What exactly is all this? Well, lets break it down:&lt;/p>
+&lt;p>&lt;code>ACTION==&amp;quot;remove&amp;quot;&lt;/code>&lt;/p>
+&lt;p>&lt;code>ACTION&lt;/code> is a key (name) outlined by the udev man page. It matches the name of an event action. We have set this to &lt;code>remove&lt;/code> because we want to run a script upon the removal/disconnection of the USB device. If you reference the image from above where we are obtaining the &lt;code>ID_MODEL&lt;/code> of our device, you can also see the &lt;code>ACTION&lt;/code> key and it&amp;rsquo;s value.&lt;/p>
+&lt;p>&lt;code>ENV{ID_MODEL}==&amp;quot;SanDisk_3.2Gen1&amp;quot;&lt;/code>&lt;/p>
+&lt;p>&lt;code>ENV{key}&lt;/code> is a key that is used for matching against a device property value. There are multiple different device properties such as &lt;code>ID_VENDOR&lt;/code>, &lt;code>ID_VENDOR_ENC&lt;/code>, and others; however, we are only interested in the &lt;code>ID_MODEL&lt;/code> key as it allows us to consistently identify the USB device associated with our Buskill cable. We are using the &lt;code>==&lt;/code> operator to compare between the &lt;code>ID_MODEL&lt;/code> of the USB device that prompted the &lt;code>remove&lt;/code> action with our Buskill cable&amp;rsquo;s &lt;code>ID_MODEL&lt;/code>. In my case, the &lt;code>ID_MODEL&lt;/code> is &lt;code>SanDisk_3.2Gen1&lt;/code>. This allows us to specify what USB drive must be removed for our script to run. This way, we are still able to remove other USB devices without any interference. If you elect to remove this section, any USB device that is removed from your computer will cause the script to run.&lt;/p>
+&lt;p>&lt;code>ENV{DISPLAY}=&amp;quot;:0&amp;quot;&lt;/code>&lt;/p>
+&lt;p>Again, we are taking advantage of &lt;code>ENV{key}&lt;/code>. In this instance, however, we are not doing any comparisons. This time, we are using the &lt;code>=&lt;/code> operator in order to set the value of &lt;code>DISPLAY&lt;/code> to &lt;code>:0&lt;/code>. We are using this to instruct our program to run on the default host of our machine.&lt;/p>
+&lt;p>&lt;code>RUN+=&amp;quot;/bin/sh /home/msi/buskill.sh&amp;quot;&lt;/code>&lt;/p>
+&lt;p>This is where we specify what interpreter to use and what program will be executed. Similar to how we configured the &lt;em>shebang&lt;/em> in our &lt;code>buskill.sh&lt;/code> script, we will specify the rule to execute our program with the Sh interpreter by prepending the program&amp;rsquo;s path with &lt;code>/bin/sh&lt;/code>. We must ensure that we specify the absolute path for the script, as udev expects our program to reside in &lt;code>/lib/udev&lt;/code> by default. In my case, the absolute path to the script is &lt;code>/home/user/buskill.sh&lt;/code>.&lt;/p>
+&lt;h2 id="conclusion">Conclusion&lt;/h2>
+&lt;p>If everything has been properly configured, then your computer should quickly shutdown upon disconnection of the cable no matter the circumstances. In most circumstances, you would have the carabiner that is connected to you Buskill cable&amp;rsquo;s USB device attached to your belt-loop or some other part that is connected to you. In the case that an adversary attempts to separate you from your computer, the USB device will be disconnected from the Buskill cable, forcing the computer to shut down. Huge thanks to Michael Altfield for creating Buskill, and still showing us how to do it for free. If you are looking to purchase a Buskill cable, visit: &lt;a class="link" href="https://www.buskill.in/store/" target="_blank" rel="noopener"
+>https://www.buskill.in/store/&lt;/a>. If you are looking for the official Buskill app (open-source), vist: &lt;a class="link" href="https://github.com/BusKill/buskill-app" target="_blank" rel="noopener"
+>https://github.com/BusKill/buskill-app&lt;/a>. This post serves as documentation for the errors I encountered when configuring my own Buskill cable and the solutions I found. If you encounter any issues, feel free to contact me: &lt;a class="link" href="mailto:addressaxiom@pm.me" >addressaxiom@pm.me&lt;/a>.&lt;/p></description></item></channel></rss>
