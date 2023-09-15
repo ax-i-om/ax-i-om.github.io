@@ -1,6 +1,6 @@
 ---
 title: Tempest
-description: Leveraging paste sites as a medium for the discovery of exploitative materials.
+description: Leveraging paste sites as a medium for the discovery of objectionable and infringing materials.
 slug: tempest
 date: 2023-08-08 00:00:00+0000
 image: cover.jpg
