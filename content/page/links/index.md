@@ -8,7 +8,7 @@ links:
   - title: Email (addressaxiom@pm.me)
     description: Email correspondence
     website: mailto:addressaxiom@pm.me
-    image: https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Proton_Mail_Logo_01.svg/800px-Proton_Mail_Logo_01.svg.png?20230402214442
+    image: https://icons8.com/icon/124163/secure-mail
 menu:
     main: 
         weight: 4
