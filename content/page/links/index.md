@@ -8,7 +8,6 @@ links:
   - title: Email (addressaxiom@pm.me)
     description: Email correspondence
     website: mailto:addressaxiom@pm.me
-    image: img/avatar.jpg
 menu:
     main: 
         weight: 4
