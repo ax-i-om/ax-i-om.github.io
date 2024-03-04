@@ -17,11 +17,11 @@ menu:
 
 ## About me
 
-Hello, my name is Axiom and I am currently pursuing a Bachelor's Degree in Cybersecurity at an institution recognized by the NSA (National Security Agency) as a National Center of Academic Excellence (CAE) in Cyber Operations. I hold a dynamic blend of skills cultivated through developing open-source software, specifically in the realm of open-source intelligence, which I leverage to automate tasks relating to intelligence, analysis, and data extraction/archival.
+Hello, my name is Axiom and I am currently pursuing a Bachelor's Degree in Cybersecurity at an institution recognized by the NSA (National Security Agency) as a National Center of Academic Excellence (CAE) in Cyber Operations alongside my profession as an IT Technician. I hold a dynamic blend of skills cultivated through developing open-source software, specifically in the realm of open-source intelligence, which I leverage to automate tasks relating to intelligence, analysis, and data extraction/archival.
 
 ## About the blog
 
-This site will hold primarily technical information relating to privacy, security, open-source intelligence, and software development. I am also an avid home-labber and will update information relating to homelabs and self-hosting. I will occasionally upload research and findings relating to gaming, gaming systems, and the modification of the systems in question. I will also use this site as a compilation of coursework completed per the requirements of my degree. Only recently did I begin publishing information relating to my projects in the hopes that someone, somewhere might find my works to be of use. 
+This site will hold primarily technical information relating to privacy, security, open-source intelligence, and software development. I am also an avid home-labber and will upload information relating to homelabs and self-hosting. I will occasionally upload research and findings relating to gaming, gaming systems, and the modification of the systems in question. I will also use this site as a compilation of coursework completed per the requirements of my degree. Only recently did I begin publishing information relating to my projects in the hopes that someone, somewhere might find my works to be of use. 
 
 ## Projects
 
@@ -39,6 +39,8 @@ A theme present throughout my projects is a highly modular design philosophy tha
 
 ## Contact
 
-My resume is availabe upon request.
+My resume is available upon request.
 
 Please feel free to contact me at [addressaxiom@pm.me](mailto:addressaxiom@pm.me) for any queries whatsoever, as I will be more than happy to respond. I am open to any conversation, opportunities for collaboration, and experiences that you might present.
+
+I sincerely appreciate you visiting my site and taking the time to learn more about me.
