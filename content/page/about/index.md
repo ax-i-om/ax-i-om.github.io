@@ -17,7 +17,7 @@ menu:
 
 ## About me
 
-Hello, my name is Axiom and I am currently pursuing a Bachelor's Degree in Cybersecurity at an institution recognized by the NSA (National Security Agency) as a National Center of Academic Excellence (CAE) in Cyber Operations alongside my profession as an IT Technician. I hold a dynamic blend of skills cultivated through developing open-source software, specifically in the realm of open-source intelligence, which I leverage to automate tasks relating to intelligence, analysis, and data extraction/archival.
+Hello, my name is Axiom and I am currently pursuing a Bachelor's Degree in Cybersecurity at an institution recognized by the NSA (National Security Agency) as a National Center of Academic Excellence in Cyber Operations (NCAE-CO) alongside my profession as an IT Technician. I hold a dynamic blend of skills cultivated through developing open-source software, specifically in the realm of open-source intelligence, which I leverage to automate tasks relating to intelligence, analysis, and data extraction/archival.
 
 ## About the blog
 
