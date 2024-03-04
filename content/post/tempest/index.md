@@ -14,7 +14,6 @@ tags:
     - DMCA
 ---
 
-
 ## Introduction
 
 Recently, I found myself using a program I had previously created named [Netflip](https://github.com/ax-i-om/netflip) which allows me to "scrape paste sites for sensitive information." It works by essentially brute-forcing the random string of characters used to generate paste URLs (e.g. https\:\/\/rentry.co\/**ab12b**\/raw). The bolded area that says **ab12b** is what Netflip attempts to brute force, and is relatively easy considering the very short length of five characters. It allows you to filter the results via plain text and RegEx (Regular Expression) so that you don't have to manually filter out ridiculous amounts of useless information. 
@@ -129,3 +128,7 @@ Tempest has undergone some significant changes since this post was published. Te
 - SendVid
 
 Alongside the implementation of these new modules, Tempest now extracts more information about extracted links (Upload Date, Drive/File Size, File Count, Video Length, Thumbnail, etc...) where applicable. This metadata coupled with Tempest's new ability to output said results to JSON/CSV files enables researchers/professionals to efficiently handle large amounts of scraped data in order to engage in advanced analytics. Tempest is also currently undergoing some significant modularization and code refactoring in order to streamline maintenance and collaboration while simultaneously accomodating users with an intuitive interface/experience. The end-level of modularity Tempest aims to achieve will enable virtually anyone to add their own modules to Tempest, or tailor Tempest to their specific needs (foundational functions such as Extract(), Validate(), and any applicable metadata extraction functions will always be exported). 
+
+## AI Disclosure
+
+The banner/header image featured in this article and the [Tempest logo/symbol](https://raw.githubusercontent.com/ax-i-om/tempest/main/images/icon.png) was generated using OpenAI's DALL-E 2 AI system.

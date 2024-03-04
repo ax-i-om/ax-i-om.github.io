@@ -122,3 +122,7 @@ This is where we specify what interpreter to use and what program will be execut
 ## Conclusion
 
 If everything has been properly configured, then your computer should quickly shutdown upon disconnection of the cable no matter the circumstances. In most circumstances, you would have the carabiner that is connected to you Buskill cable's USB device attached to your belt-loop or some other part that is connected to you. In the case that an adversary attempts to separate you from your computer, the USB device will be disconnected from the Buskill cable, forcing the computer to shut down. Huge thanks to Michael Altfield for creating Buskill, and still showing us how to do it for free. If you are looking to purchase a Buskill cable, visit: [https://www.buskill.in/store/](https://www.buskill.in/store/). If you are looking for the official Buskill app (open-source), vist: [https://github.com/BusKill/buskill-app](https://github.com/BusKill/buskill-app). This post serves as documentation for the errors I encountered when configuring my own Buskill cable and the solutions I found. If you encounter any issues, feel free to contact me: [addressaxiom@pm.me](mailto:addressaxiom@pm.me).
+
+## AI Disclosure
+
+The banner/header image featured in this article was generated using OpenAI's DALL-E 2 AI system.
