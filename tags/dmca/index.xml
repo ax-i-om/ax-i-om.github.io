@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>DMCA on Axiom</title><link>https://ax-i-om.github.io/tags/dmca/</link><description>Recent content in DMCA on Axiom</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 08 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ax-i-om.github.io/tags/dmca/index.xml" rel="self" type="application/rss+xml"/><item><title>Tempest</title><link>https://ax-i-om.github.io/p/tempest/</link><pubDate>Tue, 08 Aug 2023 00:00:00 +0000</pubDate><guid>https://ax-i-om.github.io/p/tempest/</guid><description>&lt;img src="https://ax-i-om.github.io/p/tempest/cover.jpg" alt="Featured image of post Tempest" />&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>Recently, I found myself using a program I had previously created named &lt;a class="link" href="https://github.com/ax-i-om/netflip" target="_blank" rel="noopener"
+>Netflip&lt;/a> which allows me to &amp;ldquo;scrape paste sites for sensitive information.&amp;rdquo; It works by essentially brute-forcing the random string of characters used to generate paste URLs (e.g. https://rentry.co/&lt;strong>ab12b&lt;/strong>/raw). The bolded area that says &lt;strong>ab12b&lt;/strong> is what Netflip attempts to brute force, and is relatively easy considering the very short length of five characters. It allows you to filter the results via plain text and RegEx (Regular Expression) so that you don&amp;rsquo;t have to manually filter out ridiculous amounts of useless information.&lt;/p>
+&lt;p>This tool also includes a preview window that displays the contents of valid links within the interface, meaning you can get a glimpse of everything that is being scraped. During this process, I noticed some things that were occurring quite often. Many of these pastes included links to files/drives hosted by file sharing/file storage platforms such as Mega, Google Drive, Yandex Disk, and others. Of course, my curiosity led to me looking to see exactly what I had stumbled across. A lot of the links were no longer valid for whatever reason. The first valid link I found contained a text file, which held a Base64 encoded message. Decoding the message redirected me to another Mega link that, fortunately, was also valid. I was excited to follow this path and see what awaited at the end, but unfortunately, it was just a brush file. I continued my search and found more valid links that were not so boring. Inside these drives were heaps of stolen content of all different types. This was a crude violation of the Mega Terms of Service, Copyright, and Piracy Statutes.&lt;/p>
+&lt;h2 id="monetization">Monetization&lt;/h2>
+&lt;p>In most cases, these groups that distribute the stolen content don&amp;rsquo;t put a direct paywall in front of it. They use services like Linkvertise and other ad links that generate revenue from clicks and advertisements. They also increase their revenue by requiring their members to refer others before they can access anything. They may sometimes even form partnerships with other groups that redistribute stolen content. Below are images of messages inside of a discord group that distributes stolen content, where they require individuals to refer others to access specific content. They also provide instructions on how to easily refer others and even an extra section where you can pay if you don&amp;rsquo;t feel like inviting people.&lt;/p>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/tempest/assets/8.jpg"
+width="510"
+height="598"
+srcset="https://ax-i-om.github.io/p/tempest/assets/8_hu6e92772119abb2880586a608c63982e4_35694_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/tempest/assets/8_hu6e92772119abb2880586a608c63982e4_35694_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Image of how to get free access by inviting people"
+class="gallery-image"
+data-flex-grow="85"
+data-flex-basis="204px"
+>
+&lt;img src="https://ax-i-om.github.io/p/tempest/assets/9.jpg"
+width="518"
+height="383"
+srcset="https://ax-i-om.github.io/p/tempest/assets/9_hu524d0b6b8542dc55331a59d3f933baad_25668_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/tempest/assets/9_hu524d0b6b8542dc55331a59d3f933baad_25668_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Image of instructions on how to purchase instant access"
+class="gallery-image"
+data-flex-grow="135"
+data-flex-basis="324px"
+>
+&lt;img src="https://ax-i-om.github.io/p/tempest/assets/10.jpg"
+width="475"
+height="477"
+srcset="https://ax-i-om.github.io/p/tempest/assets/10_hu000bc079cf64601e3c4e8a612fac3141_33617_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/tempest/assets/10_hu000bc079cf64601e3c4e8a612fac3141_33617_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Image of instructions on how to easily refer others"
+class="gallery-image"
+data-flex-grow="99"
+data-flex-basis="238px"
+>&lt;/p>
+&lt;p>As aforementioned, they don&amp;rsquo;t only require referrals or a single paywall. They also put everything behind ad links like Linkvertise, which requires individuals to complete certain tasks like reading sponsored articles, viewing advertisements, or downloading applications. Linkvertise grants earnings equal to around 9.35 USD per 1,000 clicks, or .00935 USD per click. One of these groups that uses paste sites and chains Linkvertise links to increase earnings has a paste that serves as a sort of &amp;ldquo;featured index,&amp;rdquo; where there are 22 content links. The first content link redirects to a Linkvertise page, and after completion, we see that 2,231 individuals have viewed the resulting page. That is 2,231 clicks. This paste redirects the user to one more Linkvertise page, which points to another paste. This second paste has 2,765 views. That is a total of 4,996 clicks or around 46.71 USD. The second listing on their list of 22 links collected a total of around 3,427 clicks or 32.04 USD. The third only used one instance of Linkvertise, collecting around 13.94 USD. The fourth earned around 20.93 USD. One link in the content list ended up broken, but the remaining 21 functioned properly.&lt;/p>
+&lt;p>The total revenue from the remaining 21 links was 720.87 USD, purely from Linkvertise. This also only came from their &amp;ldquo;featured&amp;rdquo; content, meaning there is much more that they are distributing via services like Telegram and Discord. That is an average of 34.33 USD for each folder/drive of (stolen) content.&lt;/p>
+&lt;h2 id="approach">Approach&lt;/h2>
+&lt;p>I realized how much of an issue this is, but also how I can use this to my advantage. These links to Mega drives/files aren&amp;rsquo;t naturally indexed by search engines, meaning that their discovery is essentially impossible unless someone directly shared this link with you or publicly uploaded it somewhere. This previously meant that there was no straightforward answer for discovering bad actors using Mega as a hub for the storage and distribution of stolen content. We also couldn&amp;rsquo;t &lt;em>guess&lt;/em> the Mega drive&amp;rsquo;s ID and/or decryption key in an efficient manner, considering the combined length/complexity; however, now that individuals have started using paste sites as a medium for distribution, we don&amp;rsquo;t have to. All we have to do is guess the five-character string that is used as the identifier for the paste, and we can guess these &lt;em>really&lt;/em> fast. This also means that any content discovered through this process was meant to be shared, meaning we are not directly violating anyone&amp;rsquo;s privacy.&lt;/p>
+&lt;p>After realizing this, I quickly got to work on developing a more refined solution, designed specifically to scrape and extract links to these file-sharing/storage drives. I salvaged and modified some code for generating a random string of characters using two arguments: the length of the string, and what characters to choose from. The paste site that Tempest currently scrapes from is Rentry.co, which uses a five-character long string consisting of lower case characters (a-z), upper case characters (A-Z), and numbers 0-9. We use this section of the code to brute force the Rentry.co paste identifier string until we get a hit. We differentiate between hits and misses by using the response&amp;rsquo;s status code. If the status code is 200 (OK), then we have a hit. If it is anything else, then it is a miss and we continue.&lt;/p>
+&lt;p>After we get a hit, the next step is to check whether or not the &lt;em>raw&lt;/em> paste contains a Mega link. This can be achieved relatively easily by using RegEx. Here is the expression I created that can accurately identify any valid Mega file and/or folder.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">https://mega.nz/(folder|file)/([a-zA-Z0-9]{0,8})#([a-zA-Z0-9_-]{43}|[a-zA-Z0-9_-]{22})
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>This will NOT extract Mega links that do not include a decryption key in the URL. Mega links quickly differentiate between files and folders in the URL. Both files and folders have an ID of eight characters in length, consisting of lower case characters (a-z), upper case characters (A-Z), and the numbers 0-9. This is followed by a pound (#) symbol, which separates the ID from the decryption key. The decryption key can consist of lower case characters (a-z), upper case characters (A-Z), and the numbers 0-9; however, the decryption key also may include underscores ( _ ) and dashes/hyphens ( - ). Unlike the IDs, the decryption keys do differentiate in length based on whether or not it is a file or folder. Folders have a decryption key of 22 characters in length, whereas files have a decryption key of 43 characters in length. We will use the same expression to later extract any identified links from the paste.&lt;/p>
+&lt;p>Now that we have extracted our Mega link, we must check whether or not it is still online. There is not much use in scraping offline Mega links in our scenario. The Mega API (Application Programming Interface) makes this extremely easy. Here is what the request URL looks like in Tempest:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">https://g.api.mega.co.nz/cs?id=5644474&amp;amp;n=ID
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>In this URL, we replace &lt;strong>ID&lt;/strong> with the eight-character identifier in our extracted Mega link. This is quite easy to do using RegEx, thanks to the contextual characters present in the URL. Passing the identifier to this API will mainly return one of two values. If it returns a value of &lt;strong>-2&lt;/strong>, then our Mega link is online. If it returns any other value (typically &lt;strong>-9&lt;/strong>), then our Mega link is invalid.&lt;/p>
+&lt;p>Now all that is left to do is to output the Mega link, where we both write it to the console and write it to a specified text file.&lt;/p>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/tempest/assets/1.jpg"
+width="446"
+height="834"
+srcset="https://ax-i-om.github.io/p/tempest/assets/1_hu2926371e3eecc49276ffce0fe6e0f667_74784_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/tempest/assets/1_hu2926371e3eecc49276ffce0fe6e0f667_74784_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Image of Tempest being rate limited"
+class="gallery-image"
+data-flex-grow="53"
+data-flex-basis="128px"
+>&lt;/p>
+&lt;p>The program is quick, but unfortunately, it is bottlenecked by rate limiting. I decided not to bypass this to avoid causing any heavy loads or interfering with Rentry operations in any manner but may implement proxy list support to Tempest in the future to circumvent this issue. Without bypassing the rate limits, I was able to scrape 350 online Mega links in around 30 minutes total.&lt;/p>
+&lt;p>Here is a link to the repository containing the program created and used in this article: &lt;a class="link" href="https://github.com/ax-i-om/tempest" target="_blank" rel="noopener"
+>Tempest&lt;/a>&lt;/p>
+&lt;h2 id="results">Results&lt;/h2>
+&lt;p>Now I had to evaluate every one of these links which took around four hours total. The text file containing the links had each link separated by a new line. My method of annotation was to write a descriptive tag next to each link based on its contents. Here is a key to the annotations I used:&lt;/p>
+&lt;p>&lt;strong>INFRINGING&lt;/strong> - identifies content that infringes copyright/piracy statutes whilst not being obscene (movies, tv shows, music, video games, etc&amp;hellip;).&lt;/p>
+&lt;p>&lt;strong>OBSCENE&lt;/strong> - identifies content that is infringing and obscene/indecent.&lt;/p>
+&lt;p>&lt;strong>REASONABLE&lt;/strong> - identifies content that is empty or requires further inspection beyond simply viewing the content metadata (downloading, streaming, previewing, etc&amp;hellip;), but we can reasonably assume that the contents are infringing, obscene, or objectionable based on the remaining metadata (title, folder names, remaining marks, etc&amp;hellip;).&lt;/p>
+&lt;p>&lt;strong>OBJECTIONABLE&lt;/strong> - identifies content that falls under Mega&amp;rsquo;s definition of objectionable material, and typically represents exploitative materials.&lt;/p>
+&lt;p>&lt;strong>OTHER/NONE&lt;/strong> - identifies content that falls outside of the aforementioned categories, and according to inspection, isn&amp;rsquo;t exploitative, obscene, or infringing in any manner.&lt;/p>
+&lt;p>Unfortunately, I was unable to mark any of the links as &lt;strong>OTHER/NONE&lt;/strong>. Out of the 350 links, every single one of them was infringing or we could reasonably assume they were infringing.&lt;/p>
+&lt;p>Before continuing, here are some relevant clauses in the Mega Terms of Service under the &lt;em>&lt;strong>&amp;ldquo;What you can&amp;rsquo;t do&amp;rdquo;&lt;/strong>&lt;/em> section that we will be referencing.&lt;/p>
+&lt;ul>
+&lt;li>15.3 - infringe anyone else’s intellectual property (including but not limited to copyright) or other rights in any data;&lt;/li>
+&lt;li>15.7 - &lt;em>use our service to:&lt;/em>
+&lt;ul>
+&lt;li>15.7.1 - to store, use, download, upload, share, access, transmit, or otherwise make available, data in violation of any law in any country (including to breach copyright or other intellectual property rights held by us or anyone else);&lt;/li>
+&lt;li>15.7.4 - to store, use, download, upload, share, access, transmit, or otherwise make available, unsuitable, offensive, obscene, or discriminatory information of any kind;&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>89.71% (314/350) of the folders/drives contained content that was infringing.
+10.29% (36/350) of the folders/drives contained enough content/metadata which we could reasonably assume was infringing in some manner. These folders were typically empty, contained empty folders, or contained a zip file.&lt;/p>
+&lt;p>There were many different methods I employed to evaluate the contents of the drives while avoiding exposure. The first and most obvious way was to look at the metadata of the drive and the folders/files that it contained.&lt;/p>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/tempest/assets/2.jpg"
+width="1804"
+height="267"
+srcset="https://ax-i-om.github.io/p/tempest/assets/2_hubb206c78c3542ba84f7c06abbcad15a8_28682_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/tempest/assets/2_hubb206c78c3542ba84f7c06abbcad15a8_28682_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Image of drive metadata"
+class="gallery-image"
+data-flex-grow="675"
+data-flex-basis="1621px"
+>&lt;/p>
+&lt;p>In the image above, we can see the title of the drive and the name of the 0B folder (censored). A quick search on the internet shows us that these groups do distribute stolen content, and use paste sites to distribute said content. We can also reference the size of the folder (we don&amp;rsquo;t need to reasonably assume with this drive, but this is a good example nonetheless). Large files/folders typically indicate lots of photos and videos, as these files generally utilize more space than something like a configuration file. We can also reference the metadata of remaining files, which usually contain group information/markings. For example, a group that marks every single file with its name.&lt;/p>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/tempest/assets/3.jpg"
+width="310"
+height="306"
+srcset="https://ax-i-om.github.io/p/tempest/assets/3_hu185748d6c1be13d786a42bc3896148ca_6464_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/tempest/assets/3_hu185748d6c1be13d786a42bc3896148ca_6464_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Image of marked file within drive"
+class="gallery-image"
+data-flex-grow="101"
+data-flex-basis="243px"
+>&lt;/p>
+&lt;p>Groups who leave their logo:&lt;/p>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/tempest/assets/7.jpg"
+width="726"
+height="725"
+srcset="https://ax-i-om.github.io/p/tempest/assets/7_hu3f12491ad959590cf695afccab8b9615_46304_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/tempest/assets/7_hu3f12491ad959590cf695afccab8b9615_46304_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Image of group logo"
+class="gallery-image"
+data-flex-grow="100"
+data-flex-basis="240px"
+>&lt;/p>
+&lt;p>Some groups leave images, .pdf files, and .txt files containing methods of contact.&lt;/p>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/tempest/assets/4.jpg"
+width="602"
+height="894"
+srcset="https://ax-i-om.github.io/p/tempest/assets/4_hu3bfd593c81898f0b749c3f305fdb1708_66586_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/tempest/assets/4_hu3bfd593c81898f0b749c3f305fdb1708_66586_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Image of group leaving contact information via .jpg file"
+class="gallery-image"
+data-flex-grow="67"
+data-flex-basis="161px"
+>
+&lt;img src="https://ax-i-om.github.io/p/tempest/assets/5.jpg"
+width="869"
+height="945"
+srcset="https://ax-i-om.github.io/p/tempest/assets/5_hu2a0c4f54f92d392251a7cf9c746f4632_77907_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/tempest/assets/5_hu2a0c4f54f92d392251a7cf9c746f4632_77907_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Image of group leaving contact information via .pdf file"
+class="gallery-image"
+data-flex-grow="91"
+data-flex-basis="220px"
+>
+&lt;img src="https://ax-i-om.github.io/p/tempest/assets/6.jpg"
+width="1017"
+height="487"
+srcset="https://ax-i-om.github.io/p/tempest/assets/6_hu84edd95847ed4c4796403d36882675dd_30997_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/tempest/assets/6_hu84edd95847ed4c4796403d36882675dd_30997_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Image of group leaving contact information via .txt file"
+class="gallery-image"
+data-flex-grow="208"
+data-flex-basis="501px"
+>&lt;/p>
+&lt;p>Out of the 314 folders/drives that were guaranteed to contain infringing content, only 1.91% (6/314) of them were not obscene. This means their content consisted of media like movies, TV shows, video games, music, and other common forms of entertainment/media.&lt;/p>
+&lt;p>94.9% (298/314) of them contained content that was obscene/indecent but doesn&amp;rsquo;t necessarily fall under the definition of objectionable content. &lt;a class="link" href="https://mega.io/takedown#Objectionable-material" target="_blank" rel="noopener"
+>Mega&amp;rsquo;s definition of objectionable content&lt;/a> is &lt;em>&lt;strong>child exploitation material, violent extremism, bestiality, zoophilia, gore, malware, hacked/stolen data, passwords&lt;/strong>&lt;/em> or &lt;em>&lt;strong>other material as defined in &lt;a class="link" href="https://www.legislation.govt.nz/act/public/1993/0094/latest/DLM313407.html" target="_blank" rel="noopener"
+>section 3 of the Films, Videos, and Publications Classification Act of 1993&lt;/a> or other seriously harmful material&lt;/strong>&lt;/em>. Although these materials aren&amp;rsquo;t necessarily objectionable according to the above definitions, they are still against all of the aforementioned Mega Terms of Service clauses (&lt;em>15.3, 15.7.1, 15.7.4&lt;/em>). 3.18% (10/314) of the folders/drives contained materials that could be described as objectionable.&lt;/p>
+&lt;p>According to the &lt;a class="link" href="https://mega.io/takedown#Objectionable-material" target="_blank" rel="noopener"
+>Objectionable material&lt;/a> section in Mega&amp;rsquo;s &lt;a class="link" href="https://mega.io/takedown" target="_blank" rel="noopener"
+>Takedown guidance policy&lt;/a>, Mega &amp;ldquo;may take down or disable access to such material, close the user’s account and provide account details and other data to the appropriate authorities as it sees fit.&amp;rdquo; Unfortunately, they make it explicitly clear that they are &lt;em>not&lt;/em> obligated to do so. They also don&amp;rsquo;t provide any simple methods of reporting said content like many other services do. Unfortunately, I am unable to report an extremely large majority of the content as it does not &amp;ldquo;infringe on the copyright of someone I am authorized to represent.&amp;rdquo; Fortunately, Mega does offer an email address &lt;a class="link" href="mailto:abuse@mega.nz" >abuse@mega.nz&lt;/a> for anyone to report any objectionable/abusive content, which I promptly used (August 7th, 2023) to report the 10 drives/files that contained content that could be described as objectionable. In less than 45 minutes, they responded. They were requesting more information regarding the provided drives/files, specifically what I consider a Terms of Service violation and a description of each link. I described how each link falls under their definition of objectionable material, and what specifically defines it as objectionable. In less than 25 minutes, all of the drives/files were removed and the user&amp;rsquo;s accounts were closed for &amp;ldquo;gross violation of MEGA&amp;rsquo;s Terms of Service.&amp;rdquo; They have shown that given the proper information, they are diligent in removing objectionable/exploitative content. Considering the ease of this, I plan to properly annotate and submit the remaining 304 links that contain infringing content in an attempt to have them removed and the accounts of those responsible for distributing them, closed.&lt;/p>
+&lt;h2 id="summary">Summary&lt;/h2>
+&lt;p>Although a bit rough-edged, Tempest has shown that it is capable of efficiently extracting exploitative materials being distributed by using paste sites as a medium of discovery. This means that we can interfere with the distribution of said content more effectively.&lt;/p>
+&lt;p>Of course, this is only the tip of the iceberg. There is a much deeper issue occurring below the surface; however, I plan to broaden Tempest&amp;rsquo;s discovery capabilities to assist in this fight. Instead of only searching for valid Mega links, I will also implement searches for Gofile, Bunkr, Dood, Google Drive, Yandex Disk, Cyberdrop, and Sendvid links. Alongside searching for other file-sharing services, Tempest will also search through other paste services such as pasteall.org, paste.in, and paste.ee. Another interesting capability I plan to add is recursive discovery, meaning that if a paste contains another paste, ad-link, or shortened URL, Tempest will automatically search said links for files, drives, or other links. Of course, I will likely implement proxy list support to bypass any rate-limiting, as that appears to be the primary bottleneck.&lt;/p>
+&lt;h2 id="update-sep-12-2023">Update (Sep 12, 2023)&lt;/h2>
+&lt;p>Tempest has undergone some significant changes since this post was published. Tempest now supports six new cloud storage/file sharing platforms along side Mega, specifically:&lt;/p>
+&lt;ul>
+&lt;li>Bunkr&lt;/li>
+&lt;li>Cyberdrop&lt;/li>
+&lt;li>Dood&lt;/li>
+&lt;li>Gofile&lt;/li>
+&lt;li>Google Drive&lt;/li>
+&lt;li>SendVid&lt;/li>
+&lt;/ul>
+&lt;p>Alongside the implementation of these new modules, Tempest now extracts more information about extracted links (Upload Date, Drive/File Size, File Count, Video Length, Thumbnail, etc&amp;hellip;) where applicable. This metadata coupled with Tempest&amp;rsquo;s new ability to output said results to JSON/CSV files enables researchers/professionals to efficiently handle large amounts of scraped data in order to engage in advanced analytics. Tempest is also currently undergoing some significant modularization and code refactoring in order to streamline maintenance and collaboration while simultaneously accomodating users with an intuitive interface/experience. The end-level of modularity Tempest aims to achieve will enable virtually anyone to add their own modules to Tempest, or tailor Tempest to their specific needs (foundational functions such as Extract(), Validate(), and any applicable metadata extraction functions will always be exported).&lt;/p>
+&lt;h2 id="ai-disclosure">AI Disclosure&lt;/h2>
+&lt;p>The banner/header image featured in this article and the &lt;a class="link" href="https://raw.githubusercontent.com/ax-i-om/tempest/main/images/icon.png" target="_blank" rel="noopener"
+>Tempest logo/symbol&lt;/a> was generated using OpenAI&amp;rsquo;s DALL-E 2 AI system.&lt;/p></description></item></channel></rss>

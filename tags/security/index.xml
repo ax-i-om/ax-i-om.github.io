@@ -1,0 +1,731 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Security on Axiom</title><link>https://ax-i-om.github.io/tags/security/</link><description>Recent content in Security on Axiom</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 25 Mar 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://ax-i-om.github.io/tags/security/index.xml" rel="self" type="application/rss+xml"/><item><title>Rapture</title><link>https://ax-i-om.github.io/p/rapture/</link><pubDate>Mon, 25 Mar 2024 00:00:00 +0000</pubDate><guid>https://ax-i-om.github.io/p/rapture/</guid><description>&lt;img src="https://ax-i-om.github.io/p/rapture/cover.jpg" alt="Featured image of post Rapture" />&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>Open-source intelligence (OSINT) can be described as data that is publicly available and its analysis. As a user of the internet, regardless of your occupation and/or interests, you have (likely unwittingly) leveraged the powers of open-source intelligence, as data powers the digital world. For the cybersecurity professional, the ability to collect and analyze open-source intelligence is indispensable. The vast presence and inherent publicity of open-source intelligence can enable cybersecurity professionals to engage in in-depth analysis of threats and perform due diligence in other adjacent fields. This can also benefit an individual or organization by assisting them in the enumeration/identification of their surface area of exposure. Even in this digital world, there are troves of valuable information that often go unnoticed. That is the information present within data breaches/leaks. These breaches contain various data points that can prove to be incredibly valuable in many different ways.&lt;/p>
+&lt;p>search.0t.rocks (previously known as search.illicit.services) was a search engine that enables users to efficiently search for specific records in compromised data. The original version/implementation hosted by MiyakoYakota leveraged the open-source search platform, Apache Solr, and served nearly 15 billion records towards the end of its operation. Some alternatives exist such as Dehashed and HaveIBeenPwned; however, these services often fall short. HaveIBeenPwned is free (API key is paid), but only presents whether or not a certain email is present in a data breach. It does not present any further information (apart from information relating to a data breach). Dehashed is a paid service and I have personally found the interface to be counterintuitive on occasion. IntelX&amp;rsquo;s pricing is exorbitant with the cheapest SMB &amp;amp; Enterprise tier being €2.500/$2,721.26 (as of the date/time of initially posting this). There are free tiers, but their capabilities are incredibly limited. This proves to be a barrier to most individuals. Search.0t.rocks was an entirely free service that presented this information in a consistent and minimal manner in spite of services like IntelX; however, it has recently shut down (once again). It is unlikely that it will be up and running again, so the developers have provided an open-source repository that enables individuals to build and serve it locally.&lt;/p>
+&lt;p>Some barriers still exist, specifically relating to adding data to the self-hosted service as the user is personally required to clean and present data. There are also some (albeit only a few) issues with self-hosting search.0t.rocks. Some issues commonly arise during setup and configuration, and there is a lot of extra code that is unnecessary for the average user looking to self-host. Unfortunately, the code is a bit hard to understand which may discourage future maintenance, so I decided to rebuild the software from the ground-up, and I have titled this project Rapture. Rapture&amp;rsquo;s code base is incredibly lightweight, enabling the software to undergo further maintenance, development, and expansion with ease. The code, setup/configuration, and interface remain consistent with the core tenants of simplicity and usability exhibited by search.0t.rocks. It also leverages the Apache Solr search platform.&lt;/p>
+&lt;p>One might argue for the use of Glogg, Klogg, or a similar application that enables individuals to index and query large files; however, this is disadvantageous when handling multiple data breaches. You are required to index a file every time before querying it, and queries take a long time. With Rapture, which leverages Apache Solr, you only have to index the breach file a single time, queries are incredibly fast, you can host and access the service over the network, and perform boolean queries. These capabilities render Rapture&amp;rsquo;s user experience superior to the proposed alternatives. These differences are critical in time-sensitive investigations.&lt;/p>
+&lt;p>This article is a comprehensive guide to configuring Rapture locally, cleaning and converting data into a valid format, and importing the data into Rapture. Although this guide was designed for the configuration of Rapture, these steps are for the most part, cross-compatible with search.0t.rocks. These steps can also be performed in a headless manner, via remote connection to a machine.&lt;/p>
+&lt;h2 id="disclaimers">Disclaimers&lt;/h2>
+&lt;p>Although a disclaimer is already included within the Rapture repository, I feel it is important to reiterate considering the nature of this documentation:&lt;/p>
+&lt;p>It is the end user&amp;rsquo;s responsibility to obey all applicable local, state, and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program. This software comes AS IS with NO WARRANTY and NO GUARANTEES of any kind. By using Rapture, you agree to the previous statements.&lt;/p>
+&lt;p>The information below (within this disclaimer section) has been paraphrased by myself, but provided by Rob Volkert through OSINTCURIOUS (&lt;a class="link" href="https://www.osintcurio.us/2019/05/21/basics-of-breach-data/" target="_blank" rel="noopener"
+>Direct&lt;/a> | &lt;a class="link" href="https://web.archive.org/web/20240322013722/https://www.osintcurio.us/2019/05/21/basics-of-breach-data/" target="_blank" rel="noopener"
+>Archive&lt;/a>). If you are looking to view the recommended guidelines in more detail, please view the full post via the link provided.&lt;/p>
+&lt;p>Although this data is publicly available, it is incredibly important that you revisit any applicable legislation. There are also commonplace guidelines recognized by the community that your activities should remain consistent with:&lt;/p>
+&lt;ul>
+&lt;li>You should not illegally profit from any compromised data&lt;/li>
+&lt;li>You should not sell compromised data&lt;/li>
+&lt;li>You should not solicit an individual to compromise data&lt;/li>
+&lt;li>You should report any instances of illegal activity to the applicable law enforcement agencies&lt;/li>
+&lt;/ul>
+&lt;h2 id="getting-started">Getting Started&lt;/h2>
+&lt;h3 id="prerequisites">Prerequisites&lt;/h3>
+&lt;ul>
+&lt;li>Git&lt;/li>
+&lt;li>Docker (w/ Docker Compose)&lt;/li>
+&lt;li>Java Runtime (8+) &lt;code>sudo apt install openjdk-19-jre-headless&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h3 id="installation">Installation&lt;/h3>
+&lt;p>The &lt;code>setup.sh&lt;/code> script that is integrated within Rapture and automatically executed, relies on and/or creates a Solr collection by the name &lt;code>BigData&lt;/code> in order to be cross-compatible with pre-existing search.0t.rocks installations/configurations.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Fetch repository from Github:&lt;/p>
+&lt;p>&lt;code>git clone https://github.com/ax-i-om/rapture.git&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Change directory&lt;/p>
+&lt;p>&lt;code>cd rapture&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Build via Docker Compose&lt;/p>
+&lt;p>&lt;code>docker compose build&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Run via Docker Compose&lt;/p>
+&lt;p>&lt;code>docker compose up -d&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>If you are following these instructions to setup &lt;strong>search.0t.rocks&lt;/strong>, rather than Rapture, then you must execute the &lt;code>run.sh&lt;/code> script that is included after step 4. If you are unable to successfully execute the &lt;code>run.sh&lt;/code> script included with &lt;strong>search.0t.rocks&lt;/strong> repository, please see the &lt;a class="link" href="#troubleshooting" >troubleshooting&lt;/a> section below.&lt;/p>
+&lt;p>All necessary installation steps have been completed, and you should now have an instance of Rapture accessible on port &lt;a class="link" href="http://localhost:6175" target="_blank" rel="noopener"
+>6175&lt;/a> (or otherwise configured port, may take a minute to initialize). If you chose to install search.0t.rocks instead, you should now have an instance accessible on port &lt;a class="link" href="http://localhost:3000" target="_blank" rel="noopener"
+>3000&lt;/a> (or otherwise configured port). You can now move on to preparing your data for importation!&lt;/p>
+&lt;h2 id="data-conversion">Data Conversion&lt;/h2>
+&lt;p>Now that you have successfully configured and launched an instance of Rapture and the technologies it depends on, it is time to prepare the data you wish to index. This part is where the difficulties reside, and the manners in which the datasets are prepared vary depending on the data points and structures presented. I would highly recommend that you familiarize yourself with a high-level programming language such as Python, as the ability to create and modify specialized scripts for preparing data is essential when handling large datasets. These examples will include hand-crafted samples that can be experimented on. All of the information/data presented in these examples were fabricated/manipulated/randomly generated; however, the formats of the datasets may share similar characteristics and fields present in many breaches. The data presented may also be formatted to be consistent with the &lt;em>&amp;ldquo;dirty&amp;rdquo;&lt;/em> formats that may be present within real-world datasets. Fortunately in the case of many publicly-available datasets, they have already been cleaned to some extent which greatly reduces the amount of work for us.&lt;/p>
+&lt;p>In this section of the guide, I will provide various examples of how to use the Python language to format datasets that necessitate various levels of preparation. This section of the article is not designed to &lt;em>give&lt;/em> you the answers on how to clean datasets, but to demonstrate the processes and workflows of cleaning such data. The ability to recognize patterns in datasets and employ solutions that leverage the patterns present is crucial. Be advised that there may not always be a &lt;em>perfect&lt;/em> solution, and this process consists strongly of trial and error.&lt;/p>
+&lt;p>You may notice some patterns among the scripts presented in this section, as each script used is a derivative of a base script/algorithm that sequentially iterates through these large files. I will only explain concepts such as appending an ID key/value once. Further explanation would be redundant, and such implementations can easily be derived by viewing the provided solutions.&lt;/p>
+&lt;p>This section is subject to expansion in the future.&lt;/p>
+&lt;h3 id="example-one">Example One&lt;/h3>
+&lt;p>For the first example, we will be handling a sample dataset that has already been &amp;lsquo;cleaned,&amp;rsquo; but we will format it to be compatible with Rapture. The specific dataset provided below (&lt;em>ex1.csv&lt;/em>) is in CSV format; however, other file/data formats are supported such as JSON and XML.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">email,password,firstName,lastName,userID,FBID
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rapture@demo.com,VK9RSuK0wSSXNc0gF8iYW1f6,axiom,estimate,4,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rapture@demo.com,N7cblKU9ypU727lwiTr9espw,garble,vortex,5,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rapture@demo.com,eP0u9cM0jAa2QeUVI3d88rYn,vertiable,slap,6,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rapture@demo.com,QxtyRMAx3KniskzjGDg6tHdl,axiom,terrific,7,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rapture@demo.com,cirSMQZp7Enh98KLb6r8JT1I,garble,eighty,8,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rapture@demo.com,9J53HQEetTv5E2xCJKe4tdaP,veritable,tumble,9,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rapture@demo.com,3sZ7NPb54Fk0Qy2LXlLejwCu,axiom,slipper,10,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rapture@demo.com,OxoZGbn3v0tvBMyWA0Jds0Ea,garble,chord,11,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">rapture@demo.com,et8ggkgUeyQ3ge7ua2YNsOLd,veritable,baffle,12,
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Only the fields specified during the execution of &lt;code>setup.sh/run.sh&lt;/code> are valid, and fields are case sensitive; therefore, &lt;code>firstName&lt;/code> is a valid key/field, whereas &lt;code>firstname&lt;/code> and &lt;code>FIRSTNAME&lt;/code> are invalid. Likewise, the &lt;code>passwords&lt;/code> field is valid; however, the singular iteration of the word (&lt;code>password&lt;/code>) is invalid.&lt;/p>
+&lt;h4 id="issues">Issues&lt;/h4>
+&lt;p>Even though this dataset appears to be well organized, it cannot be successfully posted to Rapture in its current state, as the file requires an &lt;code>id&lt;/code> field. Although other values may be omitted, each record requires an &lt;code>id&lt;/code> to be present. It is up to you how you format the &lt;code>id&lt;/code> value; however, it is important that each and every occurrence of an &lt;code>id&lt;/code> is unique. In the case of a duplicate &lt;code>id&lt;/code>, data will be overwritten. If you fail to properly provide a record identifier, you will get the following error message when attempting to import your data:&lt;/p>
+&lt;p>&lt;code>Document is missing mandatory uniqueKey field: id&lt;/code>&lt;/p>
+&lt;p>We can also observe that the &lt;code>email&lt;/code> and &lt;code>password&lt;/code> fields do not match the fields we specified while executing the &lt;code>setup.sh&lt;/code> script; therefore, we must modify these field names to &lt;code>emails&lt;/code> and &lt;code>passwords&lt;/code> respectively.&lt;/p>
+&lt;p>Although I might add such fields in the future, the &lt;code>setup.sh&lt;/code> script did not specify a &lt;code>userID&lt;/code> or &lt;code>FBID&lt;/code> field, further rendering this dataset incompatible with Rapture in its current state.&lt;/p>
+&lt;h4 id="solution-one">Solution One&lt;/h4>
+&lt;p>In a CSV file, the first row contains the headers. As we will be preparing a script that iterates through the datasets line by line, we will ensure the first action we take is to modify the headers accordingly depending on our goal.&lt;/p>
+&lt;p>As each record requires a unique identifier (&lt;code>id&lt;/code>), we will prefix the headers with &lt;code>id,&lt;/code>. Next, we will append an &lt;code>s&lt;/code> to the end of the &lt;code>email&lt;/code> and &lt;code>password&lt;/code> headers so that they correspond with the fields we specified in &lt;code>setup.sh&lt;/code>. Finally, we will remove the &lt;code>userID&lt;/code> and &lt;code>FBID&lt;/code> headers from this file, as I will be omitting these data points in this solution. If you wish to preserve these data points, please see &lt;a class="link" href="#solution-two" >Solution Two&lt;/a>. If you decide to follow this solution and remove the &lt;code>userID&lt;/code> and &lt;code>FBID&lt;/code> headers, be aware that you must also remove the corresponding values for each and every corresponding record (even if they do not have a value), otherwise you will see an error as such:&lt;/p>
+&lt;p>&lt;code>CSVLoader: input=null, line=1,expected 5 values but got 7&lt;/code>&lt;/p>
+&lt;p>Since the CSV headers only occupy the first row, we can simply set the first iteration of our script to handle this modification, and then every subsequent iteration to modify the records accordingly. For each record, we must prefix a unique record identifier. As previously mentioned, using duplicate record identifiers will lead to the unintentional overwriting of data. It is recommended to use a common scheme for specifying a record identifier. For the intents of this guide, I will use the following data to create a unique identifier:&lt;/p>
+&lt;p>&lt;strong>record: 0&lt;/strong> - This is the iteration. The first iteration (record 0), refers to the CSV headers (first line). So when the &lt;code>record&lt;/code> iterator is equal to &lt;code>0&lt;/code>, we will modify the headers. After every iteration (every line of the CSV file), the value of &lt;code>record&lt;/code> will increment by 1. So when we reach the first row following the headers, the value of &lt;strong>record&lt;/strong> will be equal to 1.&lt;/p>
+&lt;p>&lt;strong>breachDate: 01JAN1337&lt;/strong> - This variable corresponds with the date in which the data breach occurred. Since my data sample was fabricated, I am also using a fabricated value.&lt;/p>
+&lt;p>&lt;strong>cleanDate: 15MAR2024&lt;/strong> - This variable corresponds with the date in which the data was cleaned/prepared to be imported into Rapture. This way, if you import multiple batches of the same breach on different dates, you will maintain a unique record identifier.&lt;/p>
+&lt;p>&lt;strong>title: R4PTUR3&lt;/strong> - The title typically corresponds with the website/service that the breach data corresponds with. Again, since this sample data was fabricated, I am also using a fabricated value here.&lt;/p>
+&lt;p>Using this data in our script will generate a record identifier that appears like so: &lt;code>R4PTUR3-01JAN1337-15MAR2024-1&lt;/code>, where the &lt;code>1&lt;/code> value will increment by 1 for every iteration. So the 100th converted record will have the unique record identifier of: &lt;code>R4PTUR3-01JAN1337-15MAR2024-100&lt;/code>. Since we are removing the &lt;code>userID&lt;/code> and &lt;code>FBID&lt;/code> fields/headers, we must also remove the corresponding data for each row. This is actually quite simple due to the comma delimiting leveraged by the CSV (comma-separated values) format. In the header, we can observe that the 4th instance of a comma (,) is used to delimit the &lt;code>userID&lt;/code> value, and subsequently the &lt;code>FBID&lt;/code> value. Therefore, we can simply locate the index of this fourth comma and then slice the string, only preserving the contents up to the index of the fourth comma. We can (and will) apply this process to both the headers and the records.&lt;/p>
+&lt;p>After slicing the string to remove the undesired values, we prefix the string with the unique record identifier we generated. We then use the &lt;code>replace()&lt;/code> function to locate the &lt;code>email&lt;/code> and &lt;code>password&lt;/code> strings in the header and simply replace them with &lt;code>emails&lt;/code> and &lt;code>passwords&lt;/code> respectively. We then append the record to a new file, and append a newline (&amp;quot;\n&amp;quot;).&lt;/p>
+&lt;p>After performing the steps presented above, our header should look like so:&lt;/p>
+&lt;p>&lt;strong>BEFORE:&lt;/strong> &lt;code>email,password,firstName,lastName,userID,FBID&lt;/code>&lt;/p>
+&lt;p>&lt;strong>AFTER:&lt;/strong> &lt;code>id,emails,passwords,firstName,lastName&lt;/code>&lt;/p>
+&lt;p>After applying the modifications, the records should also be formatted like so:&lt;/p>
+&lt;p>&lt;strong>BEFORE:&lt;/strong> &lt;code>rapture@demo.com,VK9RSuK0wSSXNc0gF8iYW1f6,axiom,estimate,4,&lt;/code>&lt;/p>
+&lt;p>&lt;strong>AFTER:&lt;/strong> &lt;code>R4PTUR3-01JAN1337-15MAR2024-1,rapture@demo.com,VK9RSuK0wSSXNc0gF8iYW1f6,axiom,estimate&lt;/code>&lt;/p>
+&lt;p>Here is what the full, converted sample should look like after performing these steps:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">id,emails,passwords,firstName,lastName
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-1,rapture@demo.com,VK9RSuK0wSSXNc0gF8iYW1f6,axiom,estimate
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-2,rapture@demo.com,N7cblKU9ypU727lwiTr9espw,garble,vortex
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-3,rapture@demo.com,eP0u9cM0jAa2QeUVI3d88rYn,vertiable,slap
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-4,rapture@demo.com,QxtyRMAx3KniskzjGDg6tHdl,axiom,terrific
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-5,rapture@demo.com,cirSMQZp7Enh98KLb6r8JT1I,garble,eighty
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-6,rapture@demo.com,9J53HQEetTv5E2xCJKe4tdaP,veritable,tumble
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-7,rapture@demo.com,3sZ7NPb54Fk0Qy2LXlLejwCu,axiom,slipper
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-8,rapture@demo.com,OxoZGbn3v0tvBMyWA0Jds0Ea,garble,chord
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-9,rapture@demo.com,et8ggkgUeyQ3ge7ua2YNsOLd,veritable,baffle
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>This data can be successfully imported into rapture and subsequently queried. Below, I provide the script used to achieve this result.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">itertools&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">islice&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">fInstance&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">base&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nb">str&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">search&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nb">str&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">n&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nb">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-&amp;gt;&lt;/span> &lt;span class="nb">int&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">x&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">base&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">find&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">search&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">while&lt;/span> &lt;span class="n">x&lt;/span> &lt;span class="o">&amp;gt;=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="ow">and&lt;/span> &lt;span class="n">n&lt;/span> &lt;span class="o">&amp;gt;&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">x&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">base&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">find&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">search&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">x&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">search&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">n&lt;/span> &lt;span class="o">-=&lt;/span> &lt;span class="mi">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">x&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">():&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">path&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;./ex1.csv&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nb">open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;ex1-notpreserved.csv&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s1">&amp;#39;a+&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">batch_size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">100&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">breachDate&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;01JAN1337&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">cleanDate&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;15MAR2024&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">title&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;R4PTUR3&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">record&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">with&lt;/span> &lt;span class="nb">open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">path&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;r&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">as&lt;/span> &lt;span class="n">file&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">while&lt;/span> &lt;span class="kc">True&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">lines&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nb">list&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">islice&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">file&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">batch_size&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">lines&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">break&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="n">line&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">lines&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">record&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">resLine&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;id,&amp;#34;&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="n">line&lt;/span>&lt;span class="p">[:&lt;/span>&lt;span class="n">fInstance&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">line&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;,&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">4&lt;/span>&lt;span class="p">)]&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">resLine&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">resLine&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;email&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;emails&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">resLine&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">resLine&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;password&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;passwords&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">resLine&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">recordIdentifier&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">title&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;-&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">breachDate&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;-&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">cleanDate&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;-&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nb">str&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">record&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">recordIdentifier&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;,&amp;#34;&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="n">line&lt;/span>&lt;span class="p">[:&lt;/span>&lt;span class="n">fInstance&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">line&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;,&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">4&lt;/span>&lt;span class="p">)]&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">record&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="mi">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="vm">__name__&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s2">&amp;#34;__main__&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="solution-two">Solution Two&lt;/h4>
+&lt;p>If you wish to preserve the &lt;code>userID&lt;/code> and &lt;code>FBID&lt;/code> values, you must add the corresponding fields to the Solr schema. I also rename the &lt;code>FBID&lt;/code> field to &lt;code>facebookID&lt;/code> to remain cohesive with the other field naming schemes. You must also modify the headers as mentioned above, by adding the &lt;code>id&lt;/code> header and appending an &lt;code>s&lt;/code> to the &lt;code>email&lt;/code> and &lt;code>password&lt;/code> headers. Since we are not required to discovered the &lt;em>nth&lt;/em> instance of a comma in a line (since we are not removing any fields/values), we can omit the &lt;code>fInstance()&lt;/code> function.&lt;/p>
+&lt;p>Here is what the full, converted sample should look like after performing these steps:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">id,emails,passwords,firstName,lastName,userID,facebookID
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-1,rapture@demo.com,VK9RSuK0wSSXNc0gF8iYW1f6,axiom,estimate,4,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-2,rapture@demo.com,N7cblKU9ypU727lwiTr9espw,garble,vortex,5,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-3,rapture@demo.com,eP0u9cM0jAa2QeUVI3d88rYn,vertiable,slap,6,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-4,rapture@demo.com,QxtyRMAx3KniskzjGDg6tHdl,axiom,terrific,7,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-5,rapture@demo.com,cirSMQZp7Enh98KLb6r8JT1I,garble,eighty,8,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-6,rapture@demo.com,9J53HQEetTv5E2xCJKe4tdaP,veritable,tumble,9,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-7,rapture@demo.com,3sZ7NPb54Fk0Qy2LXlLejwCu,axiom,slipper,10,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-8,rapture@demo.com,OxoZGbn3v0tvBMyWA0Jds0Ea,garble,chord,11,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">R4PTUR3-01JAN1337-15MAR2024-9,rapture@demo.com,et8ggkgUeyQ3ge7ua2YNsOLd,veritable,baffle,12,
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>This data &lt;strong>CAN NOT&lt;/strong> be successfully imported into rapture and subsequently queried. If you attempt to import this data, you will receive the following error message:&lt;/p>
+&lt;p>&lt;code>ERROR: [doc=R4PTUR3-01JAN1337-15MAR2024-1] unknown field 'userID'&lt;/code>&lt;/p>
+&lt;p>In order to fix this, we must add the necessary fields to our Solr schema. We can easily achieve this using curl.&lt;/p>
+&lt;p>&lt;code>curl 'http://127.0.0.01:8983/solr/BigData/schema?wt=json' -X POST -H 'Accept: application/json' --data-raw '{&amp;quot;add-field&amp;quot;:{&amp;quot;stored&amp;quot;:&amp;quot;true&amp;quot;,&amp;quot;indexed&amp;quot;:&amp;quot;true&amp;quot;,&amp;quot;name&amp;quot;:&amp;quot;userID&amp;quot;,&amp;quot;type&amp;quot;:&amp;quot;string&amp;quot;}}'&lt;/code>&lt;/p>
+&lt;p>&lt;code>curl 'http://127.0.0.01:8983/solr/BigData/schema?wt=json' -X POST -H 'Accept: application/json' --data-raw '{&amp;quot;add-field&amp;quot;:{&amp;quot;stored&amp;quot;:&amp;quot;true&amp;quot;,&amp;quot;indexed&amp;quot;:&amp;quot;true&amp;quot;,&amp;quot;name&amp;quot;:&amp;quot;facebookID&amp;quot;,&amp;quot;type&amp;quot;:&amp;quot;string&amp;quot;}}'&lt;/code>&lt;/p>
+&lt;p>These commands add the &lt;code>userID&lt;/code> and &lt;code>facebookID&lt;/code> fields, respectively. After executing these commands, we can successfully import and query the converted data. Below, I have provided the corresponding script used to convert the data while preserving the &lt;code>userID&lt;/code> and &lt;code>facebookID&lt;/code> fields.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">itertools&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">islice&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">():&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">path&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;./ex1.csv&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nb">open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;ex1-preserved.csv&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s1">&amp;#39;a+&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">batch_size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">100&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">breachDate&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;01JAN1337&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">cleanDate&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;15MAR2024&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">title&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;R4PTUR3&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">record&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">with&lt;/span> &lt;span class="nb">open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">path&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;r&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">as&lt;/span> &lt;span class="n">file&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">while&lt;/span> &lt;span class="kc">True&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">lines&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nb">list&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">islice&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">file&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">batch_size&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">lines&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">break&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="n">line&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">lines&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">record&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">resLine&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;id,&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">line&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">resLine&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">resLine&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;email&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;emails&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">resLine&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">resLine&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;password&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;passwords&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">resLine&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">resLine&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;FBID&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;facebookID&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">resLine&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">recordIdentifier&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">title&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;-&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">breachDate&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;-&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">cleanDate&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;-&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nb">str&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">record&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">recordIdentifier&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;,&amp;#34;&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="n">line&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">record&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="mi">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">close&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="vm">__name__&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s2">&amp;#34;__main__&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="example-two">Example Two&lt;/h3>
+&lt;p>In the second example, we will be handling a real-world dataset, specifically consisting of &lt;code>.txt&lt;/code> files. The records that are contained within this dataset titled &lt;code>2_2.txt&lt;/code> which primarily consists of data compiled/aggregated from malware/stealer logs. The data presented here has been manipulated, and any sensitive credentials or personally identifiable information has been replaced.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="n">https&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="o">//&lt;/span>&lt;span class="n">osu&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">ppy&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">sh&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">home&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">download&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">axiom&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">VK9RSuK0wSSXNc0gF8iYW1f6&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">https&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="o">//&lt;/span>&lt;span class="n">www&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">facebook&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">rapture&lt;/span>&lt;span class="err">@&lt;/span>&lt;span class="n">demo&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">N7cblKU9ypU727lwiTr9espw&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">https&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="o">//&lt;/span>&lt;span class="n">auth&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">riotgames&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">login&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">rapture&lt;/span>&lt;span class="err">@&lt;/span>&lt;span class="n">demo&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">eP0u9cM0jAa2QeUVI3d88rYn&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">https&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="o">//&lt;/span>&lt;span class="n">accounts&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">google&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">signin&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">v2&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">challenge&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">pwd&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">rapture&lt;/span>&lt;span class="err">@&lt;/span>&lt;span class="n">demo&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">QxtyRMAx3KniskzjGDg6tHdl&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">https&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="o">//&lt;/span>&lt;span class="n">discord&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">channels&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="mi">881160035171001562&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="mi">359675218011979118&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">rapture&lt;/span>&lt;span class="err">@&lt;/span>&lt;span class="n">demo&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">cirSMQZp7Enh98KLb6r8JT1I&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">https&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="o">//&lt;/span>&lt;span class="n">www&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">facebook&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">rapture&lt;/span>&lt;span class="err">@&lt;/span>&lt;span class="n">demo&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">9&lt;/span>&lt;span class="n">J53HQEetTv5E2xCJKe4tdaP&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">https&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="o">//&lt;/span>&lt;span class="n">login&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">live&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">login&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">srf&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">rapture&lt;/span>&lt;span class="err">@&lt;/span>&lt;span class="n">demo&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span>&lt;span class="n">sZ7NPb54Fk0Qy2LXlLejwCu&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">https&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="o">//&lt;/span>&lt;span class="n">www&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">twitch&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">tv&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">directory&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">game&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">VALORANT&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">axiom&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">OxoZGbn3v0tvBMyWA0Jds0Ea&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">https&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="o">//&lt;/span>&lt;span class="n">login&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">live&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">login&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">srf&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">rapture&lt;/span>&lt;span class="err">@&lt;/span>&lt;span class="n">demo&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">com&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="n">et8ggkgUeyQ3ge7ua2YNsOLd&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="issues-1">Issues&lt;/h4>
+&lt;p>The example dataset provided above seems fairly straightforward at first glance. It is a &lt;code>.txt&lt;/code> file where the records (which appear to be &lt;em>domain:username/email:password&lt;/em>) are delimited by a colon (:). This presents the first issue, as there are colons present in the address bar. By using RegEx, this is pretty easily handled; however, not all of the URLs share the same format. There are various protocols indicated in the address bar throughout the dataset including: &lt;code>http&lt;/code>, &lt;code>https&lt;/code>, &lt;code>file&lt;/code>, &lt;code>android&lt;/code>, and &lt;code>ftp&lt;/code>. Some of the URLs/addresses completely omit the protocol such as &lt;code>login.live.com&lt;/code>. Some of the addresses are present on a local area network, and designated by &lt;code>localhost&lt;/code> or a private IP address, and may or may not specify a port number. Some addresses are a public IP address that may or may not specify a port number, and there are also addresses that only start with &lt;code>//&lt;/code>. I spent hours working on a RegEx pattern that covered all these bases, and got pretty close; however, there was one exception that I just could not solve so I ended up scrapping it. I tried to fix it by leveraging various AI-powered tools, and tried to simply generate a pattern with AI. These AI-powered endeavors were unsuccessful. I may attempt to develop a suitable RegEx pattern again in the future; however, this example is based on a real-world dataset consisting of hundreds of files so I ended up changing my workflow. Instead of trying to handle all these different edge cases, I simply split up my workload based on the count of colons (:) present in each line. If there are more than three colons present in a line, I write it to &lt;code>rejected.txt&lt;/code> for further review. Any lines with three or less colons present were handled/process. As I write this, I realize another option for handling the colon delimiting would be to parse the line from the end rather than from the beginning.&lt;/p>
+&lt;p>Now that we have decided how to handle the addresses (for now), we can move on to processing the credentials present in each record. I also tried to use RegEx patterns to identify whether the second field contained an email address, or if it was a password. This was a failure, as there were many malformed email addresses. I had attempted to implement prompting here that would ask the user for input when the script encountered a string that contained an &amp;ldquo;@&amp;rdquo; character but was not matched by the Regular Expression. The prompt would ask the user to review the string, and decide whether it was an email, username, or if they didn&amp;rsquo;t know. The script would then write the credential according to the user input; however, this is incredibly tedious when handling millions of records, and may be even more innaccurate. For the application in question, this distinction is likely counterintuitive so I ended up passing the value to both the &lt;code>usernames&lt;/code> and &lt;code>emails&lt;/code> field.&lt;/p>
+&lt;p>There are also some instances of backslashes and double quotes in these fields, so I will handle these occurrences accordingly by using the &lt;code>replace()&lt;/code> function.&lt;/p>
+&lt;h4 id="solution">Solution&lt;/h4>
+&lt;p>Here I have provided a script that implements this workflow. This solution also skips blank lines entirely.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;span class="lnt">48
+&lt;/span>&lt;span class="lnt">49
+&lt;/span>&lt;span class="lnt">50
+&lt;/span>&lt;span class="lnt">51
+&lt;/span>&lt;span class="lnt">52
+&lt;/span>&lt;span class="lnt">53
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">re&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">itertools&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">islice&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">OKDOMAINEXP&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="sa">r&lt;/span>&lt;span class="s1">&amp;#39;(((http|https|ftp|file|android):\/\/)|(\/\/)).*?(?=:)&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">LOGINEXP&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="sa">r&lt;/span>&lt;span class="s1">&amp;#39;.*?(?=:)&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">PASSWORDEXP&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="sa">r&lt;/span>&lt;span class="s1">&amp;#39;(?&amp;lt;=:).*&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">():&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">path&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;./2_2.txt&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nb">open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;ready.json&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s1">&amp;#39;w&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">rejected&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nb">open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;rejected.txt&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s1">&amp;#39;a+&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">batch_size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">100&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">breachDate&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;COLLECTION&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">cleanDate&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;25MAR2024&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">title&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;R4PTUR3&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">record&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">with&lt;/span> &lt;span class="nb">open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">path&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;r&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">as&lt;/span> &lt;span class="n">file&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;[&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">while&lt;/span> &lt;span class="kc">True&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">lines&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nb">list&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">islice&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">file&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">batch_size&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">lines&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">break&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="n">line&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">lines&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">line&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">count&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;:&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">&amp;gt;&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">rejected&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">line&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">recordIdentifier&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">title&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;-&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">breachDate&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;-&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">cleanDate&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;-&amp;#34;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nb">str&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">record&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">try&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">record&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;,&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">domain&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">re&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">search&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="sa">f&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="si">{&lt;/span>&lt;span class="n">OKDOMAINEXP&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">line&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">group&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">next&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">re&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">sub&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">re&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">escape&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">domain&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s2">&amp;#34;:&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">line&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">login&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">re&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">search&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="sa">f&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="si">{&lt;/span>&lt;span class="n">LOGINEXP&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">next&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">group&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">password&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">re&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">search&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="sa">f&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="si">{&lt;/span>&lt;span class="n">PASSWORDEXP&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">next&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">group&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\n\t&lt;/span>&lt;span class="s1">{&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\t\t&lt;/span>&lt;span class="s1">&amp;#34;id&amp;#34;:&amp;#34;&amp;#39;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">recordIdentifier&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s1">&amp;#39;&amp;#34;,&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\t\t&lt;/span>&lt;span class="s1">&amp;#34;domain&amp;#34;:&amp;#34;&amp;#39;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">domain&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\\\&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\&lt;/span>&lt;span class="s1">&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s1">&amp;#39;&amp;#34;,&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\t\t&lt;/span>&lt;span class="s1">&amp;#34;emails&amp;#34;:&amp;#34;&amp;#39;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">login&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\\\&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\&lt;/span>&lt;span class="s1">&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s1">&amp;#39;&amp;#34;,&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\t\t&lt;/span>&lt;span class="s1">&amp;#34;usernames&amp;#34;:&amp;#34;&amp;#39;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">login&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\\\&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\&lt;/span>&lt;span class="s1">&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="s1">&amp;#39;&amp;#34;,&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\t\t&lt;/span>&lt;span class="s1">&amp;#34;passwords&amp;#34;:&amp;#34;&amp;#39;&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">password&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\\\&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\\&lt;/span>&lt;span class="s1">&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">+&lt;/span>&lt;span class="s1">&amp;#39;&amp;#34;&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="se">\t&lt;/span>&lt;span class="s2">}&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">except&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">line&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">&amp;gt;&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">rejected&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="sa">f&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="si">{&lt;/span>&lt;span class="n">line&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">record&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="mi">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">write&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s2">]&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">saveAs&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">close&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">rejected&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">close&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="vm">__name__&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s2">&amp;#34;__main__&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>By passing the sample dataset presented above to this script, we can observe that no lines were rejected. The results depicted in &lt;code>ready.json&lt;/code> can be observed here:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;id&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;R4PTUR3-COLLECTION-25MAR2024-1&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;domain&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;https://osu.ppy.sh/home/download&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;emails&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;axiom&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;usernames&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;axiom&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;passwords&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;VK9RSuK0wSSXNc0gF8iYW1f6&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="err">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;id&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;R4PTUR3-COLLECTION-25MAR2024-9&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;domain&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;https://login.live.com/login.srf&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;emails&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;rapture@demo.com&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;usernames&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;rapture@demo.com&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;passwords&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;et8ggkgUeyQ3ge7ua2YNsOLd&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>This file can be indexed without issue.&lt;/p>
+&lt;h2 id="data-importation">Data Importation&lt;/h2>
+&lt;p>The process of importing data to Solr is very straightforward, as long as you have properly prepared your data. In order to start, you must first download and extract the Solr binaries from &lt;a class="link" href="https://solr.apache.org/downloads.html" target="_blank" rel="noopener"
+>https://solr.apache.org/downloads.html&lt;/a>. In this article, I will be using version 9.5.0.&lt;/p>
+&lt;p>Ensure that you have installed a suitable version of the Java runtime. If you have not installed a suitable version of the Java runtime, Solr will likely inform you of this and present what versions are acceptable.&lt;/p>
+&lt;p>The file types considered/accepted by the Solr POST tools are as follows:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-txt" data-lang="txt">&lt;span class="line">&lt;span class="cl">XML,JSON,JSONL,CSV,PDF,DOC,DOCX,PPT,PPTX,XLS,XLSX,ODT,ODP,ODS,OTT,OTP,OTS,RTF,HTM,HTML,TXT,LOG
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Although there are plenty of acceptable file types, we will primarily use either XML, JSON, or CSV. Any errors that arise during the use of these commands are most likely caused by malformed data. After the successful usage of these commands, you will be able to query the indexed documents via Rapture or search.0t.rocks.&lt;/p>
+&lt;h3 id="binpost">bin/post&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">~/Desktop/solr-9.5.0/bin/post -c BigData -p 8983 -host 127.0.0.1 formattedData.json
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;strong>~/Desktop/solr-9.5.0/bin/post&lt;/strong> - path to post binary&lt;/p>
+&lt;p>&lt;strong>-c BigData&lt;/strong> - specify collection&lt;/p>
+&lt;p>&lt;strong>-p 8983&lt;/strong> - specify which port Solr is running on&lt;/p>
+&lt;p>&lt;strong>-host 127.0.0.1&lt;/strong> - specify the host address running Solr&lt;/p>
+&lt;p>&lt;strong>formattedData.json&lt;/strong> - contents to post to Solr&lt;/p>
+&lt;h3 id="binsolr">bin/solr&lt;/h3>
+&lt;p>Although the above command leveraging the Solr POST tool works, the &lt;code>bin/post&lt;/code> script is deprecated in favor of the &lt;code>bin/solr&lt;/code> POST command. The syntax of the command does vary; however, it is still incredibly straightforward. I have converted the command displayed above to instead use the &lt;code>bin/solr&lt;/code> POST command.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">~/Desktop/solr-9.5.0/bin/solr post -c BigData -url http://127.0.0.1:8983/solr/BigData/update?commit=true formattedData.json
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;strong>~/Desktop/solr-9.5.0/bin/solr&lt;/strong> - path to Solr binary&lt;/p>
+&lt;p>&lt;strong>post&lt;/strong> - specify the POST command&lt;/p>
+&lt;p>&lt;strong>-c BigData&lt;/strong> - specify collection&lt;/p>
+&lt;p>&lt;strong>-url http://127.0.0.1:8983/solr/BigData/update?commit=true&lt;/strong> - specify the update URL for the Solr collection&lt;/p>
+&lt;p>&lt;strong>formattedData.json&lt;/strong> - contents to post to Solr&lt;/p>
+&lt;h2 id="troubleshooting">Troubleshooting&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>I have been contacted various times by individuals experiencing issues while trying to execute the &lt;code>run.sh&lt;/code> setup script that is included with the search.0t.rocks repository. In commit &lt;a class="link" href="https://github.com/MiyakoYakota/search.0t.rocks/commit/4c71edd10e727fbcfd98920bd54d3d1258673e6f" target="_blank" rel="noopener"
+>4c71edd&lt;/a> titled &lt;em>Update run.sh&lt;/em>, the curl commands switched from using a hard-coded host address and port number (&lt;code>localhost:8983&lt;/code>)to using variables specified by the user: (&lt;code>$ip:$port&lt;/code>) This layout prevented the variables from expanding, meaning curl was using $ip:$port as the URL, literally. This lead to the error: curl: (3) URL using bad/illegal format or missing URL for each curl statement. This issue is fixed by switching the single quotes (&amp;rsquo;) surrounding the curl&amp;rsquo;s positional URL argument to double quotes (&amp;quot;) so that the variables could successfully expand. I opened a pull request that fixes the issue (&lt;a class="link" href="https://github.com/MiyakoYakota/search.0t.rocks/pull/6" target="_blank" rel="noopener"
+>Pull Request #6&lt;/a>), but it has not yet been merged. In the meantime, please use the &lt;code>run.sh&lt;/code> file provided in the pull request or fix your existing script according to the information presented herein.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Sometimes errors might occur when using the Solr binaries if you move them from their original directory (wherever you extracted the contents of the downloaded .tgz file to).&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="future-plans">Future plans&lt;/h2>
+&lt;p>Although Rapture is technically viable and functioning in its current state, it is by no means finished. There are various plans for Rapture that will significantly improve the user experience. In the case any significant changes are made, I will properly update this article/guide with the corresponding information. The current plans for Rapture and this article are as follows:&lt;/p>
+&lt;ul>
+&lt;li>Add more examples for cleaning data&lt;/li>
+&lt;li>Create a script that simplifies the process of manipulating the Solr schema
+&lt;ul>
+&lt;li>Adding, modifying, and removing fields&lt;/li>
+&lt;li>ASCII Folding&lt;/li>
+&lt;li>Etc&amp;hellip;&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Add password extended search&lt;/li>
+&lt;li>Add extended search for license plate/VIN by leveraging the VIN library in &lt;a class="link" href="https://github.com/ax-i-om/bitcrook" target="_blank" rel="noopener"
+>Bitcrook&lt;/a>&lt;/li>
+&lt;li>Add &lt;code>NOT&lt;/code> queries&lt;/li>
+&lt;li>Further optimization/performance enhancement&lt;/li>
+&lt;/ul>
+&lt;h2 id="ai-disclosure">AI Disclosure&lt;/h2>
+&lt;p>The banner/header image featured in this article was generated using OpenAI&amp;rsquo;s DALL-E 2 AI system.&lt;/p></description></item><item><title>Bootleg Buskill</title><link>https://ax-i-om.github.io/p/bootleg-buskill/</link><pubDate>Sun, 18 Jun 2023 00:00:00 +0000</pubDate><guid>https://ax-i-om.github.io/p/bootleg-buskill/</guid><description>&lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/cover.jpg" alt="Featured image of post Bootleg Buskill" />&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>If you are reading this then chances are, you have encrypted your device&amp;rsquo;s drive(s). If someone were to steal your device then they would be unable to access your data, but what if they stole it when you have already unencrypted the device? Chances are, you wont have enough time to hold down the power button and shut off your computer. This is where BusKill comes in&lt;/p>
+&lt;p>What exactly is Buskill? According to the official website (&lt;a class="link" href="https://www.buskill.in" target="_blank" rel="noopener"
+>Website&lt;/a> | &lt;a class="link" href="https://web.archive.org/web/20230609160530/https://www.buskill.in/" target="_blank" rel="noopener"
+>Archive&lt;/a>), Buskill is a &amp;ldquo;dead man switch triggered when a magnetic breakaway is tripped.&amp;rdquo; When the USB device is disconnected, it triggers the computer to lock or shutdown. This allows us to protect our data&amp;rsquo;s confidentiality and/or integrity from being compromised.&lt;/p>
+&lt;h2 id="demo">Demo&lt;/h2>
+&lt;p>Here is a demonstration of the improvised Buskill cable in action on my old laptop running pop!_OS.
+&lt;div class="video-wrapper">
+&lt;video
+controls
+src="assets/buskill.mp4"
+poster="./video-poster.png"
+>
+&lt;p>
+Your browser doesn't support HTML5 video. Here is a
+&lt;a href="assets/buskill.mp4">link to the video&lt;/a> instead.
+&lt;/p>
+&lt;/video>
+&lt;/div>
+&lt;/p>
+&lt;h2 id="di-why">DI-Why?&lt;/h2>
+&lt;p>The concept of this &amp;ldquo;dead man switch&amp;rdquo; sounds great, but I did not want to order this hardware from another party (or order it at all) or have to manually arm/disarm the device every time. Fortunately, I found an article made by Michael Altfield (&lt;a class="link" href="https://tech.michaelaltfield.net/2020/01/02/buskill-laptop-kill-cord-dead-man-switch/" target="_blank" rel="noopener"
+>Website&lt;/a> | &lt;a class="link" href="https://web.archive.org/web/20230615230938/https://tech.michaelaltfield.net/2020/01/02/buskill-laptop-kill-cord-dead-man-switch/" target="_blank" rel="noopener"
+>Archive&lt;/a>), the founder of Buskill, that shows us how we can create our own Buskill device for cheap. Michael provides a lot of valuable information in this article, but I had to improvise.&lt;/p>
+&lt;p>The first main issue I encountered was a lack of availability for the mentioned magnetic breakaway USB adapters. The one showcased in the article was discontinued and I have had no luck finding any other USB Type A breakaway connectors except for one (&lt;a class="link" href="https://www.distrelec.biz/en/adapter-magnetic-usb-plug-magnetic-usb-jack-rosenberger-mu1k101-s00z/p/30095359" target="_blank" rel="noopener"
+>Website&lt;/a> | &lt;a class="link" href="https://web.archive.org/web/20230615231947/https://www.distrelec.biz/en/adapter-magnetic-usb-plug-magnetic-usb-jack-rosenberger-mu1k101-s00z/p/30095359" target="_blank" rel="noopener"
+>Archive&lt;/a>), but it was $36.58 + VAT for a relatively obscure product shipping from across the world.&lt;/p>
+&lt;p>Some might ask about USB-C instead as there is an abundance of USB-C magnetic breakaway cables/adapters online. Referencing a few Reddit posts/comments and some individual experiences (&lt;a class="link" href="https://www.reddit.com/r/UsbCHardware/comments/motlhn/comment/gu6jtos/?utm_source=share&amp;amp;utm_medium=web3x&amp;amp;utm_name=web3xcss&amp;amp;utm_term=1&amp;amp;utm_content=share_button" target="_blank" rel="noopener"
+>Post&lt;/a>), the current implementations of USB-C magnetic adapters &amp;ldquo;are not compliant with the USB specifications&amp;rdquo; and may damage devices. One user reported having their notebook &amp;ldquo;burned&amp;rdquo; following an accidental detach. The general concern is that your device may be damaged due to static electricity. I would assume that this is why the USB-A magnetic breakaway adapters were discontinued. I have since reached out to Griffin Technology asking if this is why, I will update this post when I receive a response. I am not one to blindly believe everything I read on the internet, but I am also not one to read the USB-C specifications as they are in excess of 300 pages and I have discovered a viable solution that doesn&amp;rsquo;t rely on a magnetic connection.&lt;/p>
+&lt;h2 id="do-it">Do it&lt;/h2>
+&lt;h3 id="requirementsmaterials">Requirements/Materials&lt;/h3>
+&lt;ul>
+&lt;li>Computer that supports udev rules (I am running a debian distribution)&lt;/li>
+&lt;li>USB adapter/extension cord&lt;/li>
+&lt;li>USB device (preferably with a hole for a keyring/string)&lt;/li>
+&lt;li>Carabiner (or keyring/paracord)&lt;/li>
+&lt;/ul>
+&lt;h3 id="hardware">Hardware&lt;/h3>
+&lt;p>First we will configure the Buskill cable itself. Take your carabiner (or keyring/paracord) and attach it to the USB device (which should have a hole). Plug your USB device into the adapter/extension cord. Ensure that the connection isn&amp;rsquo;t too tight, preventing the device from coming out. Also make sure that the connection isn&amp;rsquo;t too loose, where any slight movement would result in a disconnection. Connect the cable to your computer. I managed to find all of the parts I need just laying around in some storage bins, here is what it looks like:&lt;/p>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/assets/4.jpg"
+width="4032"
+height="3024"
+srcset="https://ax-i-om.github.io/p/bootleg-buskill/assets/4_huc2e8d80951c30c17082fcb84c97ecffc_3792847_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/bootleg-buskill/assets/4_huc2e8d80951c30c17082fcb84c97ecffc_3792847_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Completed buskill cable"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="320px"
+>&lt;/p>
+&lt;h3 id="what-shouldnt-you-do">What shouldn&amp;rsquo;t you do?&lt;/h3>
+&lt;p>For anyone who is attempting this at home, I would advise that you find a strong, durable USB device that already has a hole for a carabiner/keyring. It is unlikely that a makeshift implementation will prove to be reliable; however, I still tried. I took a strong piece of wire that I found and bent it to serve as a keyhole. I place this wire on top of the flat side of a USB drive and super glued it, then I wrapped it with electrical tape. This was not the best of ideas, but I thought why not. I tested it with some weight and the wire slipped out at around 20lbs. I&amp;rsquo;m sure someone could achieve something greater on this front, but I am not that someone. Here are some images of the failed endeavor:&lt;/p>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/assets/1.jpg"
+width="4032"
+height="3024"
+srcset="https://ax-i-om.github.io/p/bootleg-buskill/assets/1_hue633b339b372cbbcdacb1ab2548b5000_2388399_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/bootleg-buskill/assets/1_hue633b339b372cbbcdacb1ab2548b5000_2388399_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="320px"
+> &lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/assets/2.jpg"
+width="4032"
+height="3024"
+srcset="https://ax-i-om.github.io/p/bootleg-buskill/assets/2_hua567da8acc4f30d6146882345bde0e76_1176246_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/bootleg-buskill/assets/2_hua567da8acc4f30d6146882345bde0e76_1176246_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="320px"
+> &lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/assets/3.jpg"
+width="4032"
+height="3024"
+srcset="https://ax-i-om.github.io/p/bootleg-buskill/assets/3_hu8f23e0ce349cc8b6db8aafa16e1ad814_1425573_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/bootleg-buskill/assets/3_hu8f23e0ce349cc8b6db8aafa16e1ad814_1425573_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="320px"
+>&lt;/p>
+&lt;h3 id="creating-the-script">Creating the script&lt;/h3>
+&lt;p>Now that you have your DIY Buskill cable, it is time to create the script. The script we create is what will be executed when our USB device is disconnected. In this case, we will be creating a script that quickly shuts off the computer.&lt;/p>
+&lt;ol>
+&lt;li>Navigate to your home directory: &lt;code>cd /home/user&lt;/code>&lt;/li>
+&lt;li>Create a &lt;em>sh&lt;/em> file: &lt;code>touch buskill.sh&lt;/code>&lt;/li>
+&lt;li>With your preferred text editor, open the &lt;em>.sh&lt;/em> file you just created. &lt;code>nano buskill.sh&lt;/code>&lt;/li>
+&lt;li>In the &lt;em>.sh&lt;/em> file, enter the following:&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/bin/sh
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>shutdown -h now
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol start="5">
+&lt;li>Save the script and quit the editor: &lt;code>Ctrl + X, Yes, Return&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;p>This &lt;em>.sh&lt;/em> script will immediately shutdown the computer. You can replace line 2 and onwards with whatever you want to happen when the program is executed such as locking the screen, destroying the LUKS headers, or anything else you can think of. Make sure that you leave the shebang (line 1) in the script so that the correct interpreter is used.&lt;/p>
+&lt;h3 id="finding-the-id-model">Finding the ID model&lt;/h3>
+&lt;p>Before we configure our udev rule, we need to find out what the ID_MODEL of our USB device is.&lt;/p>
+&lt;ol>
+&lt;li>Insert the USB device that will be used with the Buskill cable, or the entire cable with the USB device attached.&lt;/li>
+&lt;li>Open your terminal&lt;/li>
+&lt;li>Execute the following command: &lt;code>udevadm monitor --environment --udev&lt;/code>&lt;/li>
+&lt;li>Remove your USB device/Buskill cable.&lt;/li>
+&lt;li>Press &lt;code>Ctrl + C&lt;/code> to stop monitoring.&lt;/li>
+&lt;li>Scroll until you find the entry that matches your USB device and note down the ID_MODEL value.&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://ax-i-om.github.io/p/bootleg-buskill/assets/5.jpg"
+width="944"
+height="752"
+srcset="https://ax-i-om.github.io/p/bootleg-buskill/assets/5_hue8a975865c1188aa4dd2c6c917bc1975_58387_480x0_resize_q75_box.jpg 480w, https://ax-i-om.github.io/p/bootleg-buskill/assets/5_hue8a975865c1188aa4dd2c6c917bc1975_58387_1024x0_resize_q75_box.jpg 1024w"
+loading="lazy"
+alt="Udev monitoring results"
+class="gallery-image"
+data-flex-grow="125"
+data-flex-basis="301px"
+>&lt;/p>
+&lt;h3 id="configuring-the-udev-rule">Configuring the udev rule&lt;/h3>
+&lt;p>Now that we have our cable and our script set up, its time for the important part. We need to create and configure a udev rule that will execute our program upon the disconnection of our Buskill cable. Udev grants us the ability to dynamically manage device events. In our specific scenario, we will be creating a udev rule that executes the script we previously created when we disconnect our Buskill cable&lt;/p>
+&lt;ol>
+&lt;li>Open your terminal and navigate to the rules.d directory: &lt;code>cd /etc/udev/rules.d&lt;/code>&lt;/li>
+&lt;li>Create a &lt;em>.rules&lt;/em> file: &lt;code>touch 00-usb-ID_MODEL.rules&lt;/code> (replace ID_MODEL) with the ID_MODEL you noted previously.&lt;/li>
+&lt;li>Open the file you just created with your preferred text editor: &lt;code>sudo nano 00-usb-ID_MODEL.rules&lt;/code>&lt;/li>
+&lt;li>Paste the following into the &lt;em>.rules&lt;/em> file:&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl"> ACTION==&amp;#34;remove&amp;#34;, ENV{ID_MODEL}==&amp;#34;SanDisk_3.2Gen1&amp;#34;, ENV{DISPLAY}=&amp;#34;:0&amp;#34;, RUN+=&amp;#34;/bin/sh /home/USER/buskill.sh&amp;#34;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol start="5">
+&lt;li>Replace &lt;code>SanDisk_3.2Gen1&lt;/code> with the ID_MODEL you noted previously.&lt;/li>
+&lt;li>Replace any instance of &lt;code>USER&lt;/code> with your user (so that it points to the script you created in your home directory).&lt;/li>
+&lt;li>Save the file and quit the editor: &lt;code>Ctrl + X, Yes, Return&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;p>What exactly is all this? Well, lets break it down:&lt;/p>
+&lt;p>&lt;code>ACTION==&amp;quot;remove&amp;quot;&lt;/code>&lt;/p>
+&lt;p>&lt;code>ACTION&lt;/code> is a key (name) outlined by the udev man page. It matches the name of an event action. We have set this to &lt;code>remove&lt;/code> because we want to run a script upon the removal/disconnection of the USB device. If you reference the image from above where we are obtaining the &lt;code>ID_MODEL&lt;/code> of our device, you can also see the &lt;code>ACTION&lt;/code> key and it&amp;rsquo;s value.&lt;/p>
+&lt;p>&lt;code>ENV{ID_MODEL}==&amp;quot;SanDisk_3.2Gen1&amp;quot;&lt;/code>&lt;/p>
+&lt;p>&lt;code>ENV{key}&lt;/code> is a key that is used for matching against a device property value. There are multiple different device properties such as &lt;code>ID_VENDOR&lt;/code>, &lt;code>ID_VENDOR_ENC&lt;/code>, and others; however, we are only interested in the &lt;code>ID_MODEL&lt;/code> key as it allows us to consistently identify the USB device associated with our Buskill cable. We are using the &lt;code>==&lt;/code> operator to compare between the &lt;code>ID_MODEL&lt;/code> of the USB device that prompted the &lt;code>remove&lt;/code> action with our Buskill cable&amp;rsquo;s &lt;code>ID_MODEL&lt;/code>. In my case, the &lt;code>ID_MODEL&lt;/code> is &lt;code>SanDisk_3.2Gen1&lt;/code>. This allows us to specify what USB drive must be removed for our script to run. This way, we are still able to remove other USB devices without any interference. If you elect to remove this section, any USB device that is removed from your computer will cause the script to run.&lt;/p>
+&lt;p>&lt;code>ENV{DISPLAY}=&amp;quot;:0&amp;quot;&lt;/code>&lt;/p>
+&lt;p>Again, we are taking advantage of &lt;code>ENV{key}&lt;/code>. In this instance, however, we are not doing any comparisons. This time, we are using the &lt;code>=&lt;/code> operator in order to set the value of &lt;code>DISPLAY&lt;/code> to &lt;code>:0&lt;/code>. We are using this to instruct our program to run on the default host of our machine.&lt;/p>
+&lt;p>&lt;code>RUN+=&amp;quot;/bin/sh /home/msi/buskill.sh&amp;quot;&lt;/code>&lt;/p>
+&lt;p>This is where we specify what interpreter to use and what program will be executed. Similar to how we configured the &lt;em>shebang&lt;/em> in our &lt;code>buskill.sh&lt;/code> script, we will specify the rule to execute our program with the Sh interpreter by prepending the program&amp;rsquo;s path with &lt;code>/bin/sh&lt;/code>. We must ensure that we specify the absolute path for the script, as udev expects our program to reside in &lt;code>/lib/udev&lt;/code> by default. In my case, the absolute path to the script is &lt;code>/home/user/buskill.sh&lt;/code>.&lt;/p>
+&lt;h2 id="conclusion">Conclusion&lt;/h2>
+&lt;p>If everything has been properly configured, then your computer should quickly shutdown upon disconnection of the cable no matter the circumstances. In most circumstances, you would have the carabiner that is connected to you Buskill cable&amp;rsquo;s USB device attached to your belt-loop or some other part that is connected to you. In the case that an adversary attempts to separate you from your computer, the USB device will be disconnected from the Buskill cable, forcing the computer to shut down. Huge thanks to Michael Altfield for creating Buskill, and still showing us how to do it for free. If you are looking to purchase a Buskill cable, visit: &lt;a class="link" href="https://www.buskill.in/store/" target="_blank" rel="noopener"
+>https://www.buskill.in/store/&lt;/a>. If you are looking for the official Buskill app (open-source), vist: &lt;a class="link" href="https://github.com/BusKill/buskill-app" target="_blank" rel="noopener"
+>https://github.com/BusKill/buskill-app&lt;/a>. This post serves as documentation for the errors I encountered when configuring my own Buskill cable and the solutions I found. If you encounter any issues, feel free to contact me: &lt;a class="link" href="mailto:addressaxiom@pm.me" >addressaxiom@pm.me&lt;/a>.&lt;/p>
+&lt;h2 id="ai-disclosure">AI Disclosure&lt;/h2>
+&lt;p>The banner/header image featured in this article was generated using OpenAI&amp;rsquo;s DALL-E 2 AI system.&lt;/p></description></item></channel></rss>
