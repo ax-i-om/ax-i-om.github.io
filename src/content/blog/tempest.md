@@ -5,7 +5,6 @@ title: Tempest
 slug: tempest
 featured: true
 draft: false
-ogImage: /assets/tempest/cover.jpg
 tags:
   - OSINT
   - Copyright

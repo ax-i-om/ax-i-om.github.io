@@ -5,7 +5,6 @@ title: Rapture
 slug: rapture
 featured: true
 draft: false
-ogImage: /assets/rapture/cover.jpg
 tags:
   - OSINT
   - Privacy

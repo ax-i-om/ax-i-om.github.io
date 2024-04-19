@@ -5,7 +5,6 @@ title: Bootleg Buskill
 slug: bootleg-buskill
 featured: false
 draft: false
-ogImage: /assets/bootleg-buskill/cover.jpg
 tags:
   - Privacy
   - Security
