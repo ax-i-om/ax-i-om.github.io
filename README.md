@@ -1,54 +1,158 @@
-## Hugo Theme Stack Starter Template
+# AstroPaper 📄
 
-This is a quick start template for [Hugo theme Stack](https://github.com/CaiJimmy/hugo-theme-stack). It uses [Hugo modules](https://gohugo.io/hugo-modules/) feature to load the theme.
+![AstroPaper](public/astropaper-og.jpg)
+![Typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![GitHub](https://img.shields.io/github/license/satnaing/astro-paper?color=%232F3741&style=for-the-badge)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white&style=for-the-badge)](https://conventionalcommits.org)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=for-the-badge)](http://commitizen.github.io/cz-cli/)
 
-It comes with a basic theme structure and configuration. GitHub action has been set up to deploy the theme to a public GitHub page automatically. Also, there's a cron job to update the theme automatically everyday.
+AstroPaper is a minimal, responsive, accessible and SEO-friendly Astro blog theme. This theme is designed and crafted based on [my personal blog](https://satnaing.dev/blog).
 
-To get started:
+This theme follows best practices and provides accessibility out of the box. Light and dark mode are supported by default. Moreover, additional color schemes can also be configured.
 
-1. Click *Use this template*, and create your repository on GitHub.
-![Step 1](https://user-images.githubusercontent.com/5889006/156916624-20b2a784-f3a9-4718-aa5f-ce2a436b241f.png)
+This theme is self-documented \_ which means articles/posts in this theme can also be considered as documentations. Read [the blog posts](https://astro-paper.pages.dev/posts/) or check [the README Documentation Section](#-documentation) for more info.
 
-2. Once the repository is created, create a GitHub codespace asociated with it.
-![Create codespace](https://user-images.githubusercontent.com/5889006/156916672-43b7b6e9-4ffb-4704-b4ba-d5ca40ffcae7.png)
+## 🔥 Features
 
-3. And voila! You're ready to go. The codespace has been configured with the latest version of Hugo extended, just run `hugo server` in the terminal and see your new site in action.
+- [x] type-safe markdown
+- [x] super fast performance
+- [x] accessible (Keyboard/VoiceOver)
+- [x] responsive (mobile ~ desktops)
+- [x] SEO-friendly
+- [x] light & dark mode
+- [x] fuzzy search
+- [x] draft posts & pagination
+- [x] sitemap & rss feed
+- [x] followed best practices
+- [x] highly customizable
+- [x] dynamic OG image generation for blog posts [#15](https://github.com/satnaing/astro-paper/pull/15) ([Blog Post](https://astro-paper.pages.dev/posts/dynamic-og-image-generation-in-astropaper-blog-posts/))
 
-4. Check `config` folder for the configuration files. You can edit them to suit your needs. Make sure to update the `baseurl` property in `config/_default/config.toml` to your site's URL.
+_Note: I've tested screen-reader accessibility of AstroPaper using **VoiceOver** on Mac and **TalkBack** on Android. I couldn't test all other screen-readers out there. However, accessibility enhancements in AstroPaper should be working fine on others as well._
 
-5. Once you're done editing the site, just commit it and push it. GitHub action will deploy the site automatically to GitHub page asociated with the repository.
-![GitHub action](https://user-images.githubusercontent.com/5889006/156916881-90b8bb9b-1925-4e60-9d7a-8026cda729bf.png)
----
+## ✅ Lighthouse Score
 
-In case you don't want to use GitHub codespace, you can also run this template in your local machine. **You need to install Git, Go and Hugo extended locally.**
+<p align="center">
+  <a href="https://pagespeed.web.dev/report?url=https%3A%2F%2Fastro-paper.pages.dev%2F&form_factor=desktop">
+    <img width="710" alt="AstroPaper Lighthouse Score" src="AstroPaper-lighthouse-score.svg">
+  <a>
+</p>
 
-### Update theme manually
+## 🚀 Project Structure
 
-Run:
+Inside of AstroPaper, you'll see the following folders and files:
 
 ```bash
-hugo mod get -u github.com/CaiJimmy/hugo-theme-stack/v3
-hugo mod tidy
+/
+├── public/
+│   ├── assets/
+│   │   └── logo.svg
+│   │   └── logo.png
+│   └── favicon.svg
+│   └── astropaper-og.jpg
+│   └── robots.txt
+│   └── toggle-theme.js
+├── src/
+│   ├── assets/
+│   │   └── socialIcons.ts
+│   ├── components/
+│   ├── content/
+│   │   |  blog/
+│   │   |    └── some-blog-posts.md
+│   │   └── config.ts
+│   ├── layouts/
+│   └── pages/
+│   └── styles/
+│   └── utils/
+│   └── config.ts
+│   └── types.ts
+└── package.json
 ```
 
-> This starter template has been configured with `v3` version of theme. Due to the limitation of Go module, once the `v4` or up version of theme is released, you need to update the theme manually. (Modifying `config/module.toml` file)
+Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
 
-### Deploy to another static page hostings
+Any static assets, like images, can be placed in the `public/` directory.
 
-If you want to build this site using another static page hosting, you need to make sure they have Go installed in the machine. 
+All blog posts are stored in `src/content/blog` directory.
 
-<details>
-  <summary>Vercel</summary>
-  
-You need to overwrite build command to install manually Go:
+## 📖 Documentation
 
+Documentation can be read in two formats\_ _markdown_ & _blog post_.
+
+- Configuration - [markdown](src/content/blog/how-to-configure-astropaper-theme.md) | [blog post](https://astro-paper.pages.dev/posts/how-to-configure-astropaper-theme/)
+- Add Posts - [markdown](src/content/blog/adding-new-post.md) | [blog post](https://astro-paper.pages.dev/posts/adding-new-posts-in-astropaper-theme/)
+- Customize Color Schemes - [markdown](src/content/blog/customizing-astropaper-theme-color-schemes.md) | [blog post](https://astro-paper.pages.dev/posts/customizing-astropaper-theme-color-schemes/)
+- Predefined Color Schemes - [markdown](src/content/blog/predefined-color-schemes.md) | [blog post](https://astro-paper.pages.dev/posts/predefined-color-schemes/)
+
+> For AstroPaper v1, check out [this branch](https://github.com/satnaing/astro-paper/tree/astro-paper-v1) and this [live URL](https://astro-paper-v1.astro-paper.pages.dev/)
+
+## 💻 Tech Stack
+
+**Main Framework** - [Astro](https://astro.build/)  
+**Type Checking** - [TypeScript](https://www.typescriptlang.org/)  
+**Component Framework** - [ReactJS](https://reactjs.org/)  
+**Styling** - [TailwindCSS](https://tailwindcss.com/)  
+**UI/UX** - [Figma](https://figma.com)  
+**Fuzzy Search** - [FuseJS](https://fusejs.io/)  
+**Icons** - [Boxicons](https://boxicons.com/) | [Tablers](https://tabler-icons.io/)  
+**Code Formatting** - [Prettier](https://prettier.io/)  
+**Deployment** - [Cloudflare Pages](https://pages.cloudflare.com/)  
+**Illustration in About Page** - [https://freesvgillustration.com](https://freesvgillustration.com/)  
+**Linting** - [ESLint](https://eslint.org)
+
+## 👨🏻‍💻 Running Locally
+
+The easiest way to run this project locally is to run the following command in your desired directory.
+
+```bash
+# npm 6.x
+npm create astro@latest --template satnaing/astro-paper
+
+# npm 7+, extra double-dash is needed:
+npm create astro@latest -- --template satnaing/astro-paper
+
+# yarn
+yarn create astro --template satnaing/astro-paper
 ```
-amazon-linux-extras install golang1.11 && hugo --gc --minify
+
+## Google Site Verification (optional)
+
+You can easily add your [Google Site Verification HTML tag](https://support.google.com/webmasters/answer/9008080#meta_tag_verification&zippy=%2Chtml-tag) in AstroPaper using environment variable. This step is optional. If you don't add the following env variable, the google-site-verification tag won't appear in the html `<head>` section.
+
+```bash
+# in your environment variable file (.env)
+PUBLIC_GOOGLE_SITE_VERIFICATION=your-google-site-verification-value
 ```
 
-![](https://user-images.githubusercontent.com/5889006/156917172-01e4d418-3469-4ffb-97e4-a905d28b8424.png)
+## 🧞 Commands
 
-Make sure also to specify Hugo version in the environment variable `HUGO_VERSION` (Use the latest version of Hugo extended):
+All commands are run from the root of the project, from a terminal:
 
-![Environment variable](https://user-images.githubusercontent.com/5889006/156917212-afb7c70d-ab85-480f-8288-b15781a462c0.png)
-</details>
+> **_Note!_** For `Docker` commands we must have it [installed](https://docs.docker.com/engine/install/) in your machine.
+
+| Command                              | Action                                                                                                                           |
+| :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------- |
+| `npm install`                        | Installs dependencies                                                                                                            |
+| `npm run dev`                        | Starts local dev server at `localhost:4321`                                                                                      |
+| `npm run build`                      | Build your production site to `./dist/`                                                                                          |
+| `npm run preview`                    | Preview your build locally, before deploying                                                                                     |
+| `npm run format:check`               | Check code format with Prettier                                                                                                  |
+| `npm run format`                     | Format codes with Prettier                                                                                                       |
+| `npm run sync`                       | Generates TypeScript types for all Astro modules. [Learn more](https://docs.astro.build/en/reference/cli-reference/#astro-sync). |
+| `npm run cz`                         | Commit code changes with commitizen                                                                                              |
+| `npm run lint`                       | Lint with ESLint                                                                                                                 |
+| `docker compose up -d`               | Run AstroPaper on docker, You can access with the same hostname and port informed on `dev` command.                              |
+| `docker compose run app npm install` | You can run any command above into the docker container.                                                                         |
+
+> **_Warning!_** Windows PowerShell users may need to install the [concurrently package](https://www.npmjs.com/package/concurrently) if they want to [run diagnostics](https://docs.astro.build/en/reference/cli-reference/#astro-check) during development (`astro check --watch & astro dev`). For more info, see [this issue](https://github.com/satnaing/astro-paper/issues/113).
+
+## ✨ Feedback & Suggestions
+
+If you have any suggestions/feedback, you can contact me via [my email](mailto:contact@satnaing.dev). Alternatively, feel free to open an issue if you find bugs or want to request new features.
+
+## 📜 License
+
+Licensed under the MIT License, Copyright © 2023
+
+---
+
+Made with 🤍 by [Sat Naing](https://satnaing.dev) 👨🏻‍💻 and [contributors](https://github.com/satnaing/astro-paper/graphs/contributors).
