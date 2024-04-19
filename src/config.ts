@@ -5,7 +5,6 @@ export const SITE: Site = {
   author: "Axiom",
   desc: "Cybersecurity Student and Open-Source Intelligence Enthusiast",
   title: "Axiom",
-  ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
   postPerPage: 9,
   scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
