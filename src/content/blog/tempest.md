@@ -11,7 +11,7 @@ tags:
   - Copyright
   - Piracy
   - DMCA
-description: Leveraging paste sites as a medium for the discovery of objectionable and infringing materials.
+description: Leveraging paste sites as a medium for the discovery of objectionable and infringing materials
 ---
 
 ## Table of Contents
